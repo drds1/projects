@@ -1,0 +1,20 @@
+\BOOKMARK [1][-]{section.1}{Mine Detection: Introduction and Data Source}{}% 1
+\BOOKMARK [1][-]{section.2}{K-nearest neighbour algorithm and classification}{}% 2
+\BOOKMARK [1][-]{section.3}{Hidden-Layer Neural Network}{}% 3
+\BOOKMARK [2][-]{subsection.3.1}{Theory}{section.3}% 4
+\BOOKMARK [2][-]{subsection.3.2}{optimizing the weights}{section.3}% 5
+\BOOKMARK [1][-]{section.4}{K-means clustering}{}% 6
+\BOOKMARK [1][-]{section.5}{Random Forest Decision Tree Classifier}{}% 7
+\BOOKMARK [1][-]{section.6}{Dimensionality Reduction Using PCA}{}% 8
+\BOOKMARK [1][-]{section.7}{Results}{}% 9
+\BOOKMARK [2][-]{subsection.7.1}{Neural net \(Multi-layer Perceptron}{section.7}% 10
+\BOOKMARK [3][-]{subsubsection.7.1.1}{Advantages}{subsection.7.1}% 11
+\BOOKMARK [3][-]{subsubsection.7.1.2}{Disadvantages}{subsection.7.1}% 12
+\BOOKMARK [2][-]{subsection.7.2}{Random Forest Decision Tree}{section.7}% 13
+\BOOKMARK [3][-]{subsubsection.7.2.1}{Advantages}{subsection.7.2}% 14
+\BOOKMARK [3][-]{subsubsection.7.2.2}{Disadvantages}{subsection.7.2}% 15
+\BOOKMARK [2][-]{subsection.7.3}{K-means clustering}{section.7}% 16
+\BOOKMARK [2][-]{subsection.7.4}{K-nearest neighbour}{section.7}% 17
+\BOOKMARK [3][-]{subsubsection.7.4.1}{Advantages}{subsection.7.4}% 18
+\BOOKMARK [3][-]{subsubsection.7.4.2}{Disadvantages}{subsection.7.4}% 19
+\BOOKMARK [1][-]{section.8}{Conclusions}{}% 20

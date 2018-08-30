@@ -1,0 +1,63 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyperFirstAtBeginDocument{\AtBeginDocument}
+\HyperFirstAtBeginDocument{\ifx\hyper@anchor\@undefined
+\global\let\oldcontentsline\contentsline
+\gdef\contentsline#1#2#3#4{\oldcontentsline{#1}{#2}{#3}}
+\global\let\oldnewlabel\newlabel
+\gdef\newlabel#1#2{\newlabelxx{#1}#2}
+\gdef\newlabelxx#1#2#3#4#5#6{\oldnewlabel{#1}{{#2}{#3}}}
+\AtEndDocument{\ifx\hyper@anchor\@undefined
+\let\contentsline\oldcontentsline
+\let\newlabel\oldnewlabel
+\fi}
+\fi}
+\global\let\hyper@last\relax 
+\gdef\HyperFirstAtBeginDocument#1{#1}
+\providecommand\HyField@AuxAddToFields[1]{}
+\providecommand\HyField@AuxAddToCoFields[2]{}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Mine Detection: Introduction and Data Source}{1}{section.1}}
+\@writefile{toc}{\contentsline {section}{\numberline {2}K-nearest neighbour algorithm and classification}{1}{section.2}}
+\newlabel{eq_euclid}{{1}{1}{K-nearest neighbour algorithm and classification}{equation.2.1}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Diagram of the sonar classification experiment. A reflected signal from a multi-band output pulse must be interpreted and the origin of the reflected echo must be classified as `mine' or `not a mine'. \relax }}{2}{figure.caption.1}}
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{fig_diag}{{1}{2}{Diagram of the sonar classification experiment. A reflected signal from a multi-band output pulse must be interpreted and the origin of the reflected echo must be classified as `mine' or `not a mine'. \relax }{figure.caption.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3}Hidden-Layer Neural Network}{2}{section.3}}
+\newlabel{sec_nn}{{3}{2}{Hidden-Layer Neural Network}{section.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Theory}{3}{subsection.3.1}}
+\newlabel{eq_sigmoid}{{2}{3}{Theory}{equation.3.2}{}}
+\newlabel{eq_sigmoid}{{3}{3}{Theory}{equation.3.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}optimizing the weights}{3}{subsection.3.2}}
+\newlabel{eq_cost}{{4}{3}{optimizing the weights}{equation.3.4}{}}
+\newlabel{eq_adjust_w}{{5}{3}{optimizing the weights}{equation.3.5}{}}
+\newlabel{eq_partial_tot}{{6}{4}{optimizing the weights}{equation.3.6}{}}
+\newlabel{eq_partdiv}{{7}{4}{optimizing the weights}{equation.3.7}{}}
+\newlabel{eq_delta}{{8}{4}{optimizing the weights}{equation.3.8}{}}
+\newlabel{eq_delta_in}{{9}{4}{optimizing the weights}{equation.3.9}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}K-means clustering}{4}{section.4}}
+\newlabel{eq_km_update}{{10}{5}{K-means clustering}{equation.4.10}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Random Forest Decision Tree Classifier}{5}{section.5}}
+\newlabel{sec_rf}{{5}{5}{Random Forest Decision Tree Classifier}{section.5}{}}
+\newlabel{eq_gini1}{{11}{6}{Random Forest Decision Tree Classifier}{equation.5.11}{}}
+\newlabel{eq_gini}{{12}{6}{Random Forest Decision Tree Classifier}{equation.5.12}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6}Dimensionality Reduction Using PCA}{6}{section.6}}
+\@writefile{toc}{\contentsline {section}{\numberline {7}Results}{7}{section.7}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Performance test for the four classification techniques vs training sample size. The classification accuracy is shown on the y axis where the error bars indicate the rms classification accuracy from five independent tests.\relax }}{8}{figure.caption.2}}
+\newlabel{fig_acc}{{2}{8}{Performance test for the four classification techniques vs training sample size. The classification accuracy is shown on the y axis where the error bars indicate the rms classification accuracy from five independent tests.\relax }{figure.caption.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.1}Neural net (Multi-layer Perceptron}{8}{subsection.7.1}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Performance test for the four classification techniques vs training sample size. The computation time (minus the training time) is shown on the y axis where the error bars indicate the rms computation time from five independent tests.\relax }}{9}{figure.caption.3}}
+\newlabel{fig_comptime}{{3}{9}{Performance test for the four classification techniques vs training sample size. The computation time (minus the training time) is shown on the y axis where the error bars indicate the rms computation time from five independent tests.\relax }{figure.caption.3}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.1.1}Advantages}{10}{subsubsection.7.1.1}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.1.2}Disadvantages}{10}{subsubsection.7.1.2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.2}Random Forest Decision Tree}{10}{subsection.7.2}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.2.1}Advantages}{10}{subsubsection.7.2.1}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.2.2}Disadvantages}{10}{subsubsection.7.2.2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.3}K-means clustering}{10}{subsection.7.3}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces A sample decision tree in the random forest classifier. The full tree sizes are too large to be viewed easily so a smaller tree is presented here as a conceptual aid. Each node (box) is annotated with three lines. The first shows the attribute number in question. With an inequality indicating the split inequality (e.g the first node states 'If the signal strength of the sonar signal in the 50th frequency band is less than or equal to zero, take the left branch. Else take the right branch). The second line shoes the value of the Gini coefficient (Section \ref  {sec_rf}). The fourth line shows the number of training data in this node the went down either the left or right branch and the third line shows the number of sub-sampled points used to construct the split point in the first line.\relax }}{11}{figure.caption.4}}
+\newlabel{fig_dt}{{4}{11}{A sample decision tree in the random forest classifier. The full tree sizes are too large to be viewed easily so a smaller tree is presented here as a conceptual aid. Each node (box) is annotated with three lines. The first shows the attribute number in question. With an inequality indicating the split inequality (e.g the first node states 'If the signal strength of the sonar signal in the 50th frequency band is less than or equal to zero, take the left branch. Else take the right branch). The second line shoes the value of the Gini coefficient (Section \ref {sec_rf}). The fourth line shows the number of training data in this node the went down either the left or right branch and the third line shows the number of sub-sampled points used to construct the split point in the first line.\relax }{figure.caption.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.4}K-nearest neighbour}{12}{subsection.7.4}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.4.1}Advantages}{12}{subsubsection.7.4.1}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.4.2}Disadvantages}{12}{subsubsection.7.4.2}}
+\@writefile{toc}{\contentsline {section}{\numberline {8}Conclusions}{12}{section.8}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces An example neural network fitted to the sonar mine data. The top (input) layer contains the input signal strengths for each of the 60 rf channels. This is propagated to a hidden layer that contains five neurons. The outputs from this hidden layer are then combined and fed into the output layer to yield the output class. The colour bar shows the strengths of individual weights indicated by the line connecting two neurons. The fit also includes a bias signal for each layer that is added to the weighted sum of the input signals to each neuron prior to computing the activation function (see Section \ref  {sec_nn}).\relax }}{13}{figure.caption.5}}
+\newlabel{fig0}{{5}{13}{An example neural network fitted to the sonar mine data. The top (input) layer contains the input signal strengths for each of the 60 rf channels. This is propagated to a hidden layer that contains five neurons. The outputs from this hidden layer are then combined and fed into the output layer to yield the output class. The colour bar shows the strengths of individual weights indicated by the line connecting two neurons. The fit also includes a bias signal for each layer that is added to the weighted sum of the input signals to each neuron prior to computing the activation function (see Section \ref {sec_nn}).\relax }{figure.caption.5}{}}

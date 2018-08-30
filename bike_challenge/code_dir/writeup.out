@@ -1,0 +1,10 @@
+\BOOKMARK [1][-]{section.1}{Introduction and Data Ingestion}{}% 1
+\BOOKMARK [1][-]{section.2}{Data Ingestion}{}% 2
+\BOOKMARK [1][-]{section.3}{Exploratory Data Analysis}{}% 3
+\BOOKMARK [2][-]{subsection.3.1}{Time Series}{section.3}% 4
+\BOOKMARK [1][-]{section.4}{Model fitting \(Recurrent Neural Network\)}{}% 5
+\BOOKMARK [2][-]{subsection.4.1}{Mulit-Layer-Perceptron \(MLP\)}{section.4}% 6
+\BOOKMARK [2][-]{subsection.4.2}{Theory}{section.4}% 7
+\BOOKMARK [2][-]{subsection.4.3}{optimizing the weights}{section.4}% 8
+\BOOKMARK [2][-]{subsection.4.4}{Recurrent Neural Network}{section.4}% 9
+\BOOKMARK [1][-]{section.5}{Results}{}% 10

@@ -1,0 +1,33 @@
+digraph Tree {
+node [shape=box, style="rounded", color="black", fontname=helvetica] ;
+edge [fontname=helvetica] ;
+0 [label="Product_Category_1 <= 2.5\nmse = 25403004.151\nsamples = 633\nvalue = 9546.595"] ;
+1 [label="Product_ID_P00233342 <= 0.5\nmse = 18040408.68\nsamples = 198\nvalue = 13480.103"] ;
+0 -> 1 [labeldistance=2.5, labelangle=45, headlabel="True"] ;
+2 [label="Product_ID_P00065342 <= 0.5\nmse = 17189262.221\nsamples = 196\nvalue = 13594.095"] ;
+1 -> 2 ;
+3 [label="mse = 16630998.539\nsamples = 195\nvalue = 13706.651"] ;
+2 -> 3 ;
+4 [label="mse = 0.0\nsamples = 1\nvalue = 6368.0"] ;
+2 -> 4 ;
+5 [label="Stay_In_Current_City_Years <= 2.5\nmse = 39159.188\nsamples = 2\nvalue = 4189.75"] ;
+1 -> 5 ;
+6 [label="mse = 0.0\nsamples = 1\nvalue = 3847.0"] ;
+5 -> 6 ;
+7 [label="mse = 0.0\nsamples = 1\nvalue = 4304.0"] ;
+5 -> 7 ;
+8 [label="Product_Category_1 <= 14.0\nmse = 17655064.005\nsamples = 435\nvalue = 7609.196"] ;
+0 -> 8 [labeldistance=2.5, labelangle=-45, headlabel="False"] ;
+9 [label="Product_Category_1 <= 10.5\nmse = 15810274.411\nsamples = 422\nvalue = 7375.41"] ;
+8 -> 9 ;
+10 [label="mse = 14862707.168\nsamples = 394\nvalue = 7760.517"] ;
+9 -> 10 ;
+11 [label="mse = 3186180.664\nsamples = 28\nvalue = 2636.224"] ;
+9 -> 11 ;
+12 [label="Product_ID_P00117542 <= 0.5\nmse = 10786444.691\nsamples = 13\nvalue = 16077.444"] ;
+8 -> 12 ;
+13 [label="mse = 2023383.882\nsamples = 12\nvalue = 16800.0"] ;
+12 -> 13 ;
+14 [label="mse = 0.0\nsamples = 1\nvalue = 3794.0"] ;
+12 -> 14 ;
+}

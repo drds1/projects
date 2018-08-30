@@ -1,0 +1,33 @@
+digraph Tree {
+node [shape=box, style="rounded", color="black", fontname=helvetica] ;
+edge [fontname=helvetica] ;
+0 [label="Overall Qual <= 7.5\nmse = 6679791534.6\nsamples = 1078\nvalue = 183903.2"] ;
+1 [label="Year Built <= 1984.5\nmse = 2108663592.5\nsamples = 875\nvalue = 155350.9"] ;
+0 -> 1 [labeldistance=2.5, labelangle=45, headlabel="True"] ;
+2 [label="Gr Liv Area <= 1382.5\nmse = 1282752473.4\nsamples = 615\nvalue = 137335.2"] ;
+1 -> 2 ;
+3 [label="mse = 679510584.9\nsamples = 384\nvalue = 124134.4"] ;
+2 -> 3 ;
+4 [label="mse = 1503774381.0\nsamples = 231\nvalue = 160139.9"] ;
+2 -> 4 ;
+5 [label="Garage Cars <= 2.5\nmse = 1481510455.0\nsamples = 260\nvalue = 197913.7"] ;
+1 -> 5 ;
+6 [label="mse = 902296785.1\nsamples = 225\nvalue = 189432.3"] ;
+5 -> 6 ;
+7 [label="mse = 1904305969.4\nsamples = 35\nvalue = 249533.6"] ;
+5 -> 7 ;
+8 [label="Overall Qual <= 8.5\nmse = 7825735203.8\nsamples = 203\nvalue = 306067.8"] ;
+0 -> 8 [labeldistance=2.5, labelangle=-45, headlabel="False"] ;
+9 [label="Gr Liv Area <= 1961.5\nmse = 3265077464.6\nsamples = 147\nvalue = 268329.1"] ;
+8 -> 9 ;
+10 [label="mse = 1868643804.1\nsamples = 93\nvalue = 242374.2"] ;
+9 -> 10 ;
+11 [label="mse = 2296637880.7\nsamples = 54\nvalue = 316345.5"] ;
+9 -> 11 ;
+12 [label="Gr Liv Area <= 1958.0\nmse = 7149770827.9\nsamples = 56\nvalue = 396640.6"] ;
+8 -> 12 ;
+13 [label="mse = 1842202073.2\nsamples = 26\nvalue = 341747.2"] ;
+12 -> 13 ;
+14 [label="mse = 6986480482.5\nsamples = 30\nvalue = 442033.2"] ;
+12 -> 14 ;
+}

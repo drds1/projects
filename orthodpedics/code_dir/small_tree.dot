@@ -1,0 +1,29 @@
+digraph Tree {
+node [shape=box, style="rounded", color="black", fontname=helvetica] ;
+edge [fontname=helvetica] ;
+0 [label="sacral_slope <= 42.1\ngini = 0.6\nsamples = 92\nvalue = [22, 68, 60]"] ;
+1 [label="degree_spondylolisthesis <= 14.8\ngini = 0.6\nsamples = 46\nvalue = [18, 14, 37]"] ;
+0 -> 1 [labeldistance=2.5, labelangle=45, headlabel="True"] ;
+2 [label="pelvic_tilt <= 15.9\ngini = 0.5\nsamples = 37\nvalue = [18, 1, 37]"] ;
+1 -> 2 ;
+3 [label="gini = 0.3\nsamples = 22\nvalue = [5, 0, 27]"] ;
+2 -> 3 ;
+4 [label="gini = 0.5\nsamples = 15\nvalue = [13, 1, 10]"] ;
+2 -> 4 ;
+5 [label="gini = 0.0\nsamples = 9\nvalue = [0, 13, 0]"] ;
+1 -> 5 ;
+6 [label="pelvic_radius <= 111.1\ngini = 0.5\nsamples = 46\nvalue = [4, 54, 23]"] ;
+0 -> 6 [labeldistance=2.5, labelangle=-45, headlabel="False"] ;
+7 [label="sacral_slope <= 67.1\ngini = 0.1\nsamples = 18\nvalue = [0, 28, 1]"] ;
+6 -> 7 ;
+8 [label="gini = 0.0\nsamples = 16\nvalue = [0, 26, 0]"] ;
+7 -> 8 ;
+9 [label="gini = 0.4\nsamples = 2\nvalue = [0, 2, 1]"] ;
+7 -> 9 ;
+10 [label="pelvic_tilt <= 13.5\ngini = 0.6\nsamples = 28\nvalue = [4, 26, 22]"] ;
+6 -> 10 ;
+11 [label="gini = 0.3\nsamples = 9\nvalue = [0, 3, 12]"] ;
+10 -> 11 ;
+12 [label="gini = 0.5\nsamples = 19\nvalue = [4, 23, 10]"] ;
+10 -> 12 ;
+}
