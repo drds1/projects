@@ -103,7 +103,7 @@ for iall in range(len(title_load)):
   plt.legend()
   ax1.set_xlabel('Days since January 1st 2014')
   ax1.set_ylabel('Bikes hired')
-  plt.savefig('arma_total_ts_'+np.str(iplot)+'.pdf')
+  plt.savefig(np.str(iall)+'_arma_total_ts_'+np.str(iplot)+'.pdf')
  
  np.savetxt('history.txt',history)
  np.savetxt('test.txt',test)
@@ -120,7 +120,7 @@ for iall in range(len(title_load)):
  nop = len(astr)
  f = open(np.str(iall)+'_predictions_arma.txt','w')
  for i in range(nop):
-  f.write(astr[i]+'	'+np.str(xop[i])+'	'+np.str(sigop[i])+'\n')
+  f.write(astr[i]+'	'+np.str(yop[i])+'	'+np.str(sigop[i])+'\n')
  f.close()
   
  
