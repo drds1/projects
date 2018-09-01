@@ -104,14 +104,17 @@ isort(score, ibsort, B )
 int iclm,ib, ibnow, bnow,i2,icol,bn,skip_brick,score_save=0;
 
 //array to denote whether column has a particular colour in it
-int colfill[N] = {0};
+int colfill[N] = {0},colsave[M][N],icolsum=0;
 
 // array to determine if a brick has already been chosen
 int bprev[B]={0};
 
 // engage outer loop over columns. Try to get in as many hig scoring bricks as possible
 for(iclm=0;iclm<M;iclm=iclm+1){
+icolsum=0;
 
+// reset the column output save array
+for(i2=0;i2<N;i2=i2+1) colsave[i2] = -1
 
 // inner loop over bricks in ascending order from high value down
 for (ib=0;ib<B;ib=ib+1){
@@ -122,35 +125,47 @@ skip_brick = 0;
 
 for (i2=0;i2<N;i2=i2+1) bnow[i2]  = bricks[ibnow][i2];
 
-//identify colours in brick and if a space is available in a column assign it else skip to next brick
+//identify colours in brick and, if a space is available in a column, assign it else skip to next brick
 for (i2=0;i2<N;i2=i2+2) {
 bn = bnow[i2];
-if (bn == -1 or colfill[bn] == 1) {
+if (colfill[bn] == 1) {
 skip_brick = 1;
 break;
+if (bnow == -1) break;
 }
 colfill[bn] = 1;
 }
 
+
+/* if the brick checks out put it in the column and record the score 
+also record that the brick has already been chosen to save time in future loops */
 if (skip_brick == 0){
 score_save = score_save + score[ibnow];
-bprev[ib] = 1
-
-
-}
-
-if 
-
-
-
+bprev[ib] = 1;
+colsave[iclm][icolsum]=ibnow;
+icolsum = icolsum + 1;
 }
 
 
+} //end ib loop over bricks
 
+//set empty spaces in column to zero
+for (i2 = icolsum;i2<N;i2=i2+1) colsave[iclm][i2] = -1;
+
+} //end iclm loop over columns
+
+
+
+cout << score_save << "\n";
+for (iclm = 0; iclm < M ; iclm = iclm + 1){
+for (i2=0;i2<N;i2=i2+1){
+if (colsave[iclm][i2] == -1) break;
+cout << colsave[iclm][] << " "
 }
-  
-  
+cout << "\n"
 }
+
+} // end program
 
 
 
