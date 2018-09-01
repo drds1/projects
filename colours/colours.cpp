@@ -10,21 +10,28 @@ using namespace std;
 
 
 
-// arg sorting routine (I miss numpy.argsort)
-void isort(int myints[],int idout[],int n ){
+void isort(int arr[], int idx[], int NS){
 
-int i2=0, myints_in[n];
-for (int i = 0; i < n; i++) myints_in[i] = myints[i];
-for (int i = 0; i < n; i++)
-   myints_in[i] = myints_in[i]*(1 << 2*n) + i;
-std::vector<int> myvector(myints_in, myints_in+n);
-sort(myvector.begin(), myvector.begin()+n, std::less<int>());
-for (std::vector<int>::iterator it = myvector.begin(); it != myvector.end(); ++it){
-   idout[i2] = (*it)%(1 << 2*n);
-   i2 = i2 + 1;}
+vector<int> x (arr, arr + NS );
+vector<int> y (arr, arr + NS );
 
+int ic=0;
+
+    //std::vector<int> y(x.size());
+    std::size_t n(0);
+    std::generate(std::begin(y), std::end(y), [&]{ return n++; });
+
+    std::sort(  std::begin(y), 
+                std::end(y),
+                [&](int i1, int i2) { return x[i1] < x[i2]; } );
+
+    for (auto v : y){
+        //std::cout << v << ' ';
+        idx[ic]=v;
+        ic = ic + 1;
+        }
+   
 }
-
 
 
 
@@ -77,7 +84,7 @@ int sum = 0, value = 0;
   score[i] = s;
   
   //set unused elements to -1
-  for (i2=i1+1;i2<N2-1;i2 = i2 + 1){
+  for (i2=i1+1;i2<N2;i2 = i2 + 1){
   bricks[i][i2] = -1;
   }
   
@@ -96,9 +103,13 @@ int sum = 0, value = 0;
  
 /* sort the scores so we know which brick gives the highest score.
 Prioritise these bricks when filling the grid */
-int ibsort[B];
+int ibsort[B]={0};
+
 isort(score, ibsort, B );
 
+
+cout << B<<" sorted \n";
+for (i2=0;i2<B;i2=i2+1)cout << i2<<" "<<score[i2]<<" "<<ibsort[i2]<< endl;
 
  
  
@@ -112,17 +123,23 @@ int colfill[N] = {0},colsave[M][N],bnow[N2];
 int bprev[B]={0};
 
 // engage outer loop over columns. Try to get in as many hig scoring bricks as possible
+cout << M<<" here \n"<< endl;
 for(iclm=0;iclm<M;iclm=iclm+1){
 icolsum=0;
 
+cout << "icolsum,iclm "<< icolsum << " "<< iclm << " "<< M << endl; 
 // inner loop over bricks in ascending order from high value down
 for (ib=0;ib<B;ib=ib+1){
 if (bprev[ib] == 1) break;
 
-ibnow = ibsort[ib];
+ibnow = ibsort[B-1-ib];
 skip_brick = 0;
 
-for (i2=0;i2<N2;i2=i2+1) bnow[i2]  = bricks[ibnow][i2];
+cout << " about to enter i2 loop ibnow "<<ibnow<<endl;
+for (i2=0;i2<N2;i2=i2+1) {
+bnow[i2]  = bricks[ibnow][i2];
+cout << "i2 N2 bnow "<< i2<< " " << N2 << " " << bnow[i2] << endl;
+}
 
 //identify colours in brick and, if a space is available in a column, assign it else skip to next brick
 for (i2=0;i2<N2;i2=i2+2) {
