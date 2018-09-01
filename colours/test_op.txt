@@ -1,0 +1,155 @@
+reading Number of colours, number of columns, number of bricks 
+
+ N,M,B =5 4 14
+ for each of the '<< B<< 'bricks, reading... 
+Brick 0
+0 3 4 2  Score = 6
+ 
+Brick 1
+4 2  Score = 3
+ 
+Brick 2
+3 2 4 9  Score = 12
+ 
+Brick 3
+0 3  Score = 4
+ 
+Brick 4
+1 4  Score = 5
+ 
+Brick 5
+0 3 2 9  Score = 13
+ 
+Brick 6
+0 3 1 1  Score = 5
+ 
+Brick 7
+3 4  Score = 5
+ 
+Brick 8
+0 1 1 2  Score = 4
+ 
+Brick 9
+3 9  Score = 10
+ 
+Brick 10
+2 1 4 1  Score = 3
+ 
+Brick 11
+3 2  Score = 3
+ 
+Brick 12
+2 9 3 1  Score = 11
+ 
+Brick 13
+1 5  Score = 6
+ 
+14 sorted 
+
+0 6 1
+1 3 10
+2 12 11
+3 4 3
+4 5 8
+5 13 4
+6 5 6
+7 5 7
+8 4 0
+9 10 13
+10 3 9
+11 3 12
+12 11 2
+13 6 5
+
+icolsum,iclm 0 0 4
+ identifying brick positions 
+bricks picked...00000000000000
+column 0 colours 00000
+
+Placing brick 1...
+42
+ in column 0
+New score 3
+column colour availability 00001
+bricks picked...01000000000000
+column 0 colours 00001
+
+icolsum,iclm 0 1 4
+ identifying brick positions 
+bricks picked...01000000000000
+brick 1 already chosen, skipping...
+bricks picked...01000000000000
+column 1 colours 00000
+
+Placing brick 10...
+2141
+ in column 1
+New score 6
+column colour availability 00101
+bricks picked...01000000001000
+column 1 colours 00101
+
+Placing brick 11...
+32
+ in column 1
+New score 9
+column colour availability 00111
+bricks picked...01000000001100
+column 1 colours 00111
+
+Placing brick 3...
+03
+ in column 1
+New score 13
+column colour availability 10111
+bricks picked...01010000001100
+column 1 colours 10111
+
+icolsum,iclm 0 2 4
+ identifying brick positions 
+bricks picked...01010000001100
+brick 1 already chosen, skipping...
+bricks picked...01010000001100
+brick 10 already chosen, skipping...
+bricks picked...01010000001100
+brick 11 already chosen, skipping...
+bricks picked...01010000001100
+brick 3 already chosen, skipping...
+bricks picked...01010000001100
+column 2 colours 00000
+
+Placing brick 8...
+0112
+ in column 2
+New score 17
+column colour availability 11000
+bricks picked...01010000101100
+column 2 colours 11000
+
+icolsum,iclm 0 3 4
+ identifying brick positions 
+bricks picked...01010000101100
+brick 1 already chosen, skipping...
+bricks picked...01010000101100
+brick 10 already chosen, skipping...
+bricks picked...01010000101100
+brick 11 already chosen, skipping...
+bricks picked...01010000101100
+brick 3 already chosen, skipping...
+bricks picked...01010000101100
+brick 8 already chosen, skipping...
+bricks picked...01010000101100
+column 3 colours 00000
+
+Placing brick 4...
+14
+ in column 3
+New score 22
+column colour availability 01000
+bricks picked...01011000101100
+column 3 colours 01000
+22
+1 
+10 11 3 
+8 
+4 
