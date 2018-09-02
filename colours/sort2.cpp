@@ -35,6 +35,26 @@ int ic=0;
 }
 
 
+void isortvec(vector<int> x, vector<int> y){
+
+
+int ic=0;
+
+    //std::vector<int> y(x.size());
+    std::size_t n(0);
+    std::generate(std::begin(y), std::end(y), [&]{ return n++; });
+
+    std::sort(  std::begin(y), 
+                std::end(y),
+                [&](int i1, int i2) { return x[i1] < x[i2]; } );
+
+    for (auto v : y){
+        std::cout << v << ' ';
+        y[ic] =v;
+        ic = ic + 1;
+        }
+   
+}
 
 
 
@@ -44,7 +64,9 @@ int ic=0;
 
 
 
-/*
+
+
+
 int main() {
 
 int arr[14] = {1,2,3,4,5,6,7,8,5,10,11,12,13,14};
@@ -65,8 +87,11 @@ vector<int> x (arr, arr + 14 );
 vector<int> y (arr, arr + 14 );
 
 
-
-
+isortvec(x, y);
+for (int ic=0;ic<ns;ic++){
+cout<< " vecsort "<< y[ic]<<endl;
+}
+cout<<endl;
 
     //std::vector<int> y(x.size());
     std::size_t n(0);
@@ -85,4 +110,3 @@ vector<int> y (arr, arr + 14 );
     return 0;
 }
 
-*/

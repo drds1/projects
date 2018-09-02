@@ -16,7 +16,7 @@ int main (){
 int i,n=3;
 int arr[3] = {1, 2, 3};
 //std::vector<int> v(x, x + n / n);
-vector<int> v (arr, arr + n / sizeof(arr[0]) );
+vector<int> v (arr, arr + sizeof(arr) / sizeof(arr[0]) );
 
 for (i=0; i<n;i++) cout << v[i] << " ";
 cout << endl;
