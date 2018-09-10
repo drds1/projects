@@ -74,7 +74,7 @@ Before deciding how best to model the forecasting problem, a universally sound f
 \begin{figure}
 \begin{center}
 \includegraphics[scale=1.0,angle=0,trim=0cm 0cm 0cm 0cm]{ts_plot_station.pdf}
-\caption{Same as Figure \ref{fig_ts} but restricting the time series only to bike hires departing at station xx and ending at station xx}
+\caption{Same as Figure \ref{fig_ts} but restricting the time series only to bike hires departing at station 6184 and ending at station 6015.}
 \label{fig_ts_station}
 \end{center}
 \end{figure}
@@ -82,7 +82,7 @@ Before deciding how best to model the forecasting problem, a universally sound f
 
 
 
-While Figure \ref{fig_ts} provides useful information on the periodicity of the time series, this information is much clearer to see when presented as a power spectrum. The power spectrum as a function of frequency $P(f)$ can be computed from the fourier transform of time-series data $F(f)$ where
+While Figure \ref{fig_ts} provides useful information on the periodicity of the time series, this information is much clearer to see when presented as a power spectrum. The power spectrum as a function of frequency $P(f)$ can be computed from the Fourier transform of time-series data $F(f)$ where
 
 \begin{equation}
 \label{eq_ft}
@@ -124,16 +124,24 @@ The full fitted model is therefore given by
 
 \begin{equation}
 \label{eq_rwmod}
-f(t) = \sum_k S_K \sin \left( \omega t \right) + C_k \cos \left( \omega t \right)
+f(t_i) = \sum_k S_K \sin \left( \omega_k t_i \right) + C_k \cos \left( \omega_k t_i \right)
 \end{equation}
 
-Here the sine and cosine amplitudes at each frequency $S_k$ and $C_k$ are regularized by the random walk prior to prevent the high frequencies from over-fitting the data. As with many model fitting problems, the optimum amplitudes $S_k$ and $C_k$ are found by minimizing a cost function $\chi_2$ where
-
+Here the sine and cosine amplitudes at each frequency $S_k$ and $C_k$ are regularized by the random walk prior to prevent the high frequencies from over-fitting the data. As with many model fitting problems, the optimum amplitudes $S_k$ and $C_k$ are found by minimizing a cost function $E$, where $E$ is determined not only by how well the model fits the data ($\chi^2$), but whether the fit obeys the priors on the model parameters that regularize the high frequencies against over-fitting. The full cost function therefore takes the form 
 \begin{equation}
 \label{eq_cost}
-\chi^2 = \sum_t \left( D(t)-f(t) \right)^2,
+\chi^2 = \sum_i \left( D(t_i)-f(t_i) \right)^2 + \sum_k \frac{ S_k^2 + C_k^2 }{\sigma_k^2} ,
 \end{equation}
-\noindent where $D$ is the time series data and $f(t)$ is the model given in Equation \ref{eq_rwmod}. The parameter vector $\mathbf{\theta}$ is explicitly given by
+\noindent where $D$ is the time series data and $f(t)$ is the model given in Equation \ref{eq_rwmod}. The prior distribution with width $\sigma_k$ at each frequency $\omega_k$ is given by
+
+\begin{equation}
+\label{eq_prior}
+\sigma_k^2 = P_0 \Delta \omega_k \left( \frac{\omega_k}{\omega_0}\right)^{-2}.
+\end{equation}
+
+
+
+The parameter vector $\mathbf{\theta}$ is explicitly given by
 
 \begin{equation}
 \mathbf{\theta} = \theta \left(S_{k=1},C_{k=1} ...S_{k=N_k},C_{k=N_k} \right),
@@ -157,7 +165,7 @@ This optimization function is defined in a python script \verb|myfitrw_092018| f
 
 \begin{equation}
 \label{eq_arma}
-Y(t) = C + G(0,\sigma^2) + \sum_{i=1}^{p} A_i Y(t_{i-1}) + \sum_{i=1}^{p} B_i G(t_{i-1})
+Y(t) = C + G(0,\sigma^2) + \sum_{i=1}^{p} A_i Y(t_{i-1}) + \sum_{i=1}^{q} B_i G(0,\sigma^2)
 \end{equation}
 
 
