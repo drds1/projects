@@ -162,7 +162,7 @@ def outrej(data_y_in,data_x_in=[],sd_check=4,fname='running median',filter_size 
  
     
     
- idx_out = np.concatenate(idx_out)   
+ idx_out = np.array(np.concatenate(idx_out) ,dtype='int')  
  #plot a diagnostic plot if requested
  if (diagnostic_figure != ''):
   
@@ -185,7 +185,7 @@ def outrej(data_y_in,data_x_in=[],sd_check=4,fname='running median',filter_size 
   axres.plot(xl,[0,0],ls=':')
   axres.set_ylabel('residuals \n (data - model)') 
 
-  if (diagnostic_figure != 'show'):
+  if (diagnostic_figure == 'show'):
    plt.show()
   else:
    plt.savefig(diagnostic_figure)
