@@ -91,7 +91,7 @@ def outrej(data_y_in,data_x_in=[],sd_check=4,fname='running median',filter_size 
   weights = np.repeat(1.0, window)/window
   sma = np.convolve(y, weights, 'valid')
   sma_x = x[:]
-  sma_y = np.concatenate((np.ones(window)*sma[0],sma))
+  sma_y = np.concatenate((np.ones(window-1)*sma[0],sma))
   return(sma_x,sma_y)
  
  
@@ -189,22 +189,16 @@ def outrej(data_y_in,data_x_in=[],sd_check=4,fname='running median',filter_size 
    plt.show()
   else:
    plt.savefig(diagnostic_figure)
-        
- return(data_x,data_y,idx_out)
+  plt.clf()
+    
+ return(data_y,data_x,model_y,idx_out)
 
 
 
 # Call the outlier rejection function defined above and test on the fake data.
 
-# In[5]:
-window = 5
-x = data_x
-y = data_y
-weights = np.repeat(1.0, window)/window
-sma = np.convolve(y, weights, 'valid')
-sma_x = x[:]
-sma_y = np.concatenate((np.ones(window-1)*sma[0],sma))
+# In[7]:
 
 
-data_x_pass,data_y_pass,idx_outlier = outrej(data_y,data_x,sd_check=4,fname='running mean',filter_size = 5,max_iteration=10,diagnostic_figure='show')
+data_y_pass,data_x_pass,model_y,idx_outlier = outrej(data_y,data_x,sd_check=3.5,fname='running median',filter_size = 5,max_iteration=10,diagnostic_figure='show')
 
