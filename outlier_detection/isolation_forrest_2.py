@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from sklearn.ensemble import IsolationForest
 
 rng = np.random.RandomState(42)
-nepoch_train = 10000
+nepoch_train = 100000
 nepoch_test  = 10000
 nepoch_bad   = 1000
 bad_in_train = 0
