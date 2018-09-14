@@ -71,10 +71,10 @@ def outrej(data_y_in,data_x_in=[],sd_check=4,fname='running median',filter_size 
  
  
  #if time values not provided, assume even sampling.
+ ndat   = np.shape(data_y_in)[0]  
  if (type(data_x_in) == np.ndarray):
   data_x = np.array(data_x_in)
  else:
-  ndat   = np.shape(data_y_in)[0]
   data_x = np.arange(ndat)
  data_x_in_plot = np.array(data_x)   
 
@@ -114,7 +114,8 @@ def outrej(data_y_in,data_x_in=[],sd_check=4,fname='running median',filter_size 
   #compute the residuals ( abs[data-model])
   #model_itp = np.interpolate(data_x,model_x,model_y)   
   residual = data_y - model_y
- 
+  
+  
      
   #identify points greater than sd_outlier from the model 
   if (spread_function == 'rms'):
@@ -124,22 +125,9 @@ def outrej(data_y_in,data_x_in=[],sd_check=4,fname='running median',filter_size 
   else:
    raise ValueError('Please ensure that the "spread_function" argument is set to "rms" or "mad"')
   
-  id_out = np.where(np.abs(residual) > sd_check*sd)[0]
-  n_out = np.shape(id_out)[0] 
- 
-     
-  #flag outliers and remove from them from the data arrays for the next iteration
-  #for id in id_out:
-  # print data_x[id],data_y[id]
- 
-  out_x.append(data_x[id_out])
-  out_y.append(data_y[id_out])
-  data_x = np.delete(data_x,id_out)
-  data_y = np.delete(data_y,id_out)
- 
-  #save a record of rejected array indicees 
-  idx_out.append(id_out)
-
+  
+  sdc = sd_check*sd 
+  id_out = np.where(np.abs(residual) > sdc)[0]
   #exit the loop prematurely if no outliers found
   if (np.shape(id_out)[0] == 0):
    if (comments == 1):
@@ -148,14 +136,43 @@ def outrej(data_y_in,data_x_in=[],sd_check=4,fname='running median',filter_size 
   else:
    if (comments == 1):
     print 'iteration ',iteration,'\n ',n_out,'outliers found'
+  id_out = [id_out[np.argmax(np.abs(residual[id_out] - sdc))]]
+  n_out = np.shape(id_out)[0] 
+  
+  #print 'iteration ',iteration
+  #print data_x[id_out[0]],model_x[id_out[0]],data_y[id_out[0]],'point rejected', residual[id_out[0]],id_out
+  #for io in range(n_out):
+  # idn = id_out[io]
+  # print data_x[idn],data_y[idn],model_y[idn],'rejected',iteration,sd,sd_check
+     
+  #flag outliers and remove from them from the data arrays for the next iteration
+
+ 
+  out_x.append(data_x[id_out])
+  out_y.append(data_y[id_out])
+  data_x = np.delete(data_x,id_out)
+  data_y = np.delete(data_y,id_out)
+ 
+  #save a record of rejected array indicees 
+  idx_out.append(id_out)
+  
+  
+
     
  #flag a warning if the outlier rejection has not converged after max_iteration iterations
  if ((iteration == max_iteration - 1) and (comments == 1)):
   print 'warning: Outlier rejection did not converge after a maximum,', max_iteration, ' iterations re-run for more iterations or check input data for bugs'
  
     
-    
- idx_out = np.array(np.concatenate(idx_out) ,dtype='int')  
+ try:
+  idx_out = np.array(np.concatenate(idx_out) ,dtype='int')  
+ except:
+  print 'no outliers'
+  idx_out = np.zeros(0,dtype='int')
+ 
+ if (comments == 1):
+  print 'convergence after ',iteration,'iterations'
+ 
  #plot a diagnostic plot if requested
  if (diagnostic_figure != ''):
   
