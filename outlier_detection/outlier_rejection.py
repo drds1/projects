@@ -395,7 +395,7 @@ def outrej_series(data_y,sd_check=5,fname='running median',filter_size = 5,max_i
 
 # Define a function to use EVD and feature space representation of multivariate timeseries to identify outliers.
 
-# In[22]:
+# In[9]:
 
 
 import kdestats
@@ -571,73 +571,101 @@ def evd(data_test,data_train,clevel=0.9973):
  
     
  ntrain = np.shape(fop_pca_test)[0]
- idx_x = np.array(np.interp(fop_pca_test[:,0],fop_pca_train[:,0],np.arange(ntrain)),dtype='int')
- idx_y = np.array(np.interp(fop_pca_test[:,1],fop_pca_train[:,1],np.arange(ntrain)),dtype='int') 
+ idx_x = np.array(np.interp(fop_pca_test[:,0],xmod,np.arange(nxmod)),dtype='int')
+ idx_y = np.array(np.interp(fop_pca_test[:,1],ymod,np.arange(nxmod)),dtype='int') 
  zdat = Z[idx_x,idx_y]
- print 'here'
  for i in range(len(clevels)):
   idgood = np.where(zdat > clevels[i])[0]
   idbad = np.where(zdat < clevels[i])[0]
-
+  
+  #make plot of contour levels showing good and bad time series
   fig = plt.figure()
   ax1 = fig.add_subplot(111)
   ax1.scatter(fop_pca_train[:,0],fop_pca_train[:,1],label='training points')
   ax1.set_xlabel('PCA 1')
   ax1.set_ylabel('PCA 2')
   ax1.set_title('PCA Eigen Vector Plot (test mode)')
-  print np.shape(fop_pca_train),np.shape(Z)
   ax1.contour(X,Y, Z, clevels)
   ax1.scatter(fop_pca_test[idbad,0],fop_pca_test[idbad,1],label='outliers test data',color='r')
   ax1.scatter(fop_pca_test[idgood,0],fop_pca_test[idgood,1],label='good points test data',color='black')
   ax1.imshow(np.rot90(Z), cmap=plt.cm.gist_earth_r,extent=[xmin, xmax, ymin, ymax])
   plt.legend()
   plt.show()
+    
+    
+  #plot the time series in an imshow flagging up outlying series
+  fig = plt.figure()
+  ax1 = fig.add_subplot(111)
+  dis = data_test.T
+  dis[idbad,:] = np.nan
+  col = ax1.imshow(dis,aspect='auto')
+  plt.colorbar(col,label='Time series value')
+  ax1.set_xlabel('Time')
+  ax1.set_ylabel('Time series ID')
+  plt.show()
+    
   return(zdat,Z,idx_x,idx_y,idbad,fop_pca_train,fop_pca_test)
 
 
-# In[23]:
+# In[10]:
 
 
-#introduce some time-varying noise into the model
-sd_ts = 4.0
-sd_epoch = 50.0
-amp_ts_max = 100
-amp_epoch = 100.0
-mean_ts = 53.0
-mean_epoch = 600.0
-
-
-
-nts = 100
-nepoch = 1000
-dat = np.random.randn(nepoch*nts).reshape(nepoch,nts)
-dat_train = np.array(dat)
-for i in range(nts):
- amp_ts   = amp_ts_max * np.exp(-0.5*((i*1. - mean_ts)/sd_ts)**2)
- dat[:,i] = dat[:,i] + amp_ts* np.exp(-0.5*((np.arange(nepoch) - mean_epoch)/sd_epoch)**2) 
+demo_evd = 0
+if (demo_evd == 1):
+ #introduce some time-varying noise into the model
+ sd_ts = 4.0
+ sd_epoch = 50.0
+ amp_ts_max = 100
+ amp_epoch = 100.0
+ mean_ts = 53.0
+ mean_epoch = 600.0
  
  
-plt.clf()
-fig = plt.figure()
-ax1 = fig.add_subplot(111)
-a = ax1.imshow(dat.T,aspect = 'auto')
-plt.colorbar(a)
-plt.show()
+ 
+ nts = 100
+ nepoch = 1000
+ dat = np.random.randn(nepoch*nts).reshape(nepoch,nts)
+ dat_train = np.array(dat)
+ for i in range(nts):
+  amp_ts   = amp_ts_max * np.exp(-0.5*((i*1. - mean_ts)/sd_ts)**2)
+  dat[:,i] = dat[:,i] + amp_ts* np.exp(-0.5*((np.arange(nepoch) - mean_epoch)/sd_epoch)**2) 
+  
+  
+ plt.clf()
+ fig = plt.figure()
+ ax1 = fig.add_subplot(111)
+ a = ax1.imshow(dat.T,aspect = 'auto')
+ plt.colorbar(a,label='Time series value')
+ ax1.set_xlabel('Time')
+ ax1.set_ylabel('Time series ID')
+ plt.show()
+ 
+ zdat,Z,idx_x,idx_y,idbad,fop_pca_train,fop_pca_test = evd(dat,dat_train,clevel=0.9973)
+ 
+ 
 
-zdat,Z,idx_x,idx_y,idbad,fop_pca_train,fop_pca_test = evd(dat,dat_train,clevel=0.9973)
-#xmod,ymod,Z,pcafit,clevels = evd(dat_train,pca_inp=[],xkde=[],ykde=[],zkde=[],clevel=0.9973)
-#zdat,idbad = evd(dat,pca_inp = pcafit, xkde=xmod,ykde=ymod,zkde=Z,clevel=clevels)
 
-
-# In[ ]:
-
-
-zdat,Z,idx_x,idx_y,idbad
 
 
 # Now define a function to tie everything together
 
 # In[11]:
+
+
+#INPUTS
+#data_y enter a 1D array for single-time series anomaly detection to identify points or clusters of points
+#from within a single time series, can enter a 2D array to batch run lots of time series in a single function call
+
+#data_y enter a 2D array and set runtype 'parallel' to compute outliers at each epoch by comparing 
+#with adjacent time series at the same epoch
+
+#data_y enter a list with 2 elements, the first is a 2D array of training data n_epochs x n_timeseries, the 2nd is a
+#2D array of test data. This setting will use the Extreme value distribution method of Talagala et al 2018
+#to identify entire time series that exhibit anaomalies. Useful for corelated anomalies that arrise slowly
+#and fool other outlier-detection methods.
+
+#spread_function: for series modes, outliers are identified that are sd_check*spread_function from the model
+# function specified in fname
 
 
 def outlier_smooth(data_y,sd_check=5,fname='running median',runtype='series',filter_size = 5,
@@ -650,7 +678,14 @@ def outlier_smooth(data_y,sd_check=5,fname='running median',runtype='series',fil
   id_outliers = outrej_parallel(data_y,sd_check=sd_check,fname=fname,filter_size = filter_size,
                                 max_iteration=max_iteration,diagnostic_figure=diagnostic_figure,
                                spread_function = spread_function)
-
+ 
+ #if in parallel and want to use the EVD analysis method from Talgala et al 2018, enter a list for data_y 
+ #containing the test and training data. id_outliers will now return a 1d array corresponding to the 
+ #outlying time series
+ elif (type(data_y)==list): 
+  zdat,Z,idx_x,idx_y,idbad,fop_pca_train,fop_pca_test = evd(data_y[1],data_y[0],clevel=0.9973)
+  id_outliers = idbad
+    
  elif (runtype == 'series'):
   if (len(np.shape(data_y)) ==1):
     a,b,c,id_outliers = outrej(data_y,sd_check=sd_check,fname=fname,
