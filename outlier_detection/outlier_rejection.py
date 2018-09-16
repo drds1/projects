@@ -393,9 +393,251 @@ def outrej_series(data_y,sd_check=5,fname='running median',filter_size = 5,max_i
  return(id_outliers)
 
 
+# Define a function to use EVD and feature space representation of multivariate timeseries to identify outliers.
+
+# In[22]:
+
+
+import kdestats
+
+#rolling mean function
+def movingaverage(x,y, window):
+  weights = np.repeat(1.0, window)/window
+  sma = np.convolve(y, weights, 'valid')
+  sma_x = x[:]
+  sma_y = np.concatenate((np.ones(window-1)*sma[0],sma))
+  return(sma_x,sma_y)
+
+#calculate each of the features
+def features(data_y,window = 10):
+    nfeatures = 9
+    
+    nepoch,nts = np.shape(data_y)
+    features = np.zeros((nts,nfeatures))
+    
+    #f1 mean
+    f1 = np.mean(data_y,axis=0)
+    
+    
+    #f2 variance
+    f2 = np.var(data_y,axis=0)
+    
+    
+    #f3 lumpiness devide into chunks defined by window size and calculate the variance of the variances
+    nwindow = np.int(np.ceil(1.*nepoch/window))
+    lump = np.zeros((0,nts))
+    for i in range(nwindow):
+     ilo = i*window
+     ihi = min(ilo+window,nepoch-1)
+     var = np.var(data_y[ilo:ihi,:],axis=0)
+     lump = np.vstack((lump,var))
+    f3 = np.var(lump,axis=0)
+    
+    #f4 A function to calculate Level shift using rolling window The 'level shift' is defined as the maximum difference in mean
+    # between consecutive blocks of 10 observations measure6 - Level shift using rolling window
+    f4 = []
+    for i in range(nts):
+     runmean = movingaverage(np.arange(nepoch),data_y[:,i], window)[1]
+     d_runmean = runmean[1:]-runmean[:-1]
+     f4.append(np.max(d_runmean))
+    f4 = np.array(f4)
+
+    #f5 calculate the rolling variance
+    import pandas as pd 
+    f5 = []
+    for i in range(nts):
+     s = pd.Series(data_y[:,i])
+     run_var = np.array(s.rolling(window).var())
+     d_runvar = run_var[1:]-run_var[:-1]
+     f5.append(np.nanmax(d_runvar))
+    f5 = np.array(f5)
+    
+    
+    #f6 fano factor (burstiness of time series - var/mean)
+    f6 = f2/f1
+    
+    #f7, f8 maximum and minimum of time series
+    f7 = np.nanmax(data_y,axis=0)
+    f8 = np.nanmin(data_y,axis=0)
+    
+    #f9 high to low mu ratio of means of the data that are above and below the true mean
+    f9 = []
+    for i in range(nts):
+        mean = f1[i]
+        idup = np.where(data_y[:,i]>mean)[0]
+        meanhi = np.mean(data_y[idup,i])
+        idlo = np.where(data_y[:,i]<mean)[0]
+        meanlo = np.mean(data_y[idlo,i])
+        f9.append(meanhi/meanlo)    
+    f9 = np.array(f9)
+    
+    features[:,0]=f1
+    features[:,1]=f2
+    features[:,2]=f3
+    features[:,3]=f4
+    features[:,4]=f5
+    features[:,5]=f6
+    features[:,6]=f7
+    features[:,7]=f8
+    features[:,8]=f9
+    
+    labels = ['mean','variance','lumpiness','level shift mean','level shift variance',
+              'burstiness','maximum','minimum','hightolowmu']
+    
+    
+    #make diagnostic plot
+    gs1 = gridspec.GridSpec(nfeatures, 1)
+    gs1.update(left=0.1, right=0.9, bottom=0.1,top = 0.9, wspace=0.05,hspace = 0.0)
+    for i in range(nfeatures):
+     ax1 = plt.subplot(gs1[i, 0])
+     ax1.plot(features[:,i],label=labels[i])
+     #ax1.set_ylabel(labels[i])
+     if (i == nfeatures - 1):
+      ax1.set_xlabel('Time series ID')
+     ax1.text(1.1,0.5,labels[i],ha='left',transform=ax1.transAxes)
+    plt.show()
+     
+    return(features,labels)
+
+
+#define the evd function. 2 modes, if training no need to specify pca_inp, enter training data. 
+#The feature space will be calculated on the training data and PCA used to transform this
+#INPUT: data_y 2D array nepochs x ntime series
+#       clevel The desired confidence level to consider new points outliers
+#OUTPUT: xkde,ykde = np.array(nres) The x and y values of the kernal density estimation
+#        zkde = np.array((nres,nres)) The kde estimated from the training data
+
+#If testing new data, must also input the pca_inp (output of sklearn pca routine).
+#new data will be transformed into the PCA space and their kde's estimated
+#INPUT: data_y 2D array of the TEST data
+#       xkde,ykde = np.array(nres) The x and y values of the kernal density estimation
+#        zkde = np.array((nres,nres)) The kde estimated from the training data
+#       clevel the confidence level to consider new points outliers
+
+def evd(data_test,data_train,clevel=0.9973):
+ 
+
+    
+ op_test = features(data_test,window=10)
+ op_train = features(data_train,window=10)
+ #normalise the feature matrix
+ f_train,flab_train = op_train
+ f_test,flab_test = op_test
+ 
+ nts_train,nfeatures = np.shape(f_train)
+ nts_test,nfeatures = np.shape(f_test)
+ fop_train = np.array(f_train)
+ fop_test = np.array(f_test)
+ for i in range(nfeatures):
+     fop_train[:,i] = (f_train[:,i] - np.mean(f_train[:,i]))/np.std(f_train[:,i])  
+     fop_test[:,i] = (f_test[:,i] - np.mean(f_test[:,i]))/np.std(f_test[:,i])  
+ 
+ #perform PCA
+ from sklearn.decomposition import PCA
+ pca = PCA(n_components=2)
+ pcafit = pca.fit(fop_train)
+ fop_pca_train = pcafit.fit_transform(fop_train)
+ fop_pca_test = pcafit.fit_transform(fop_test)
+
+
+
+ 
+ #fit 2d KDE to data
+ from scipy import stats
+ xmin,xmax = min(np.min(fop_pca_train[:,0]),np.min(fop_pca_test[:,0])),max(np.max(fop_pca_train[:,0]),np.max(fop_pca_test[:,0]))
+ ymin,ymax = min(np.min(fop_pca_train[:,1]),np.min(fop_pca_test[:,1])),max(np.max(fop_pca_train[:,1]),np.max(fop_pca_test[:,1]))
+
+ X, Y = np.mgrid[xmin:xmax:100j, ymin:ymax:100j]
+ positions = np.vstack([X.ravel(), Y.ravel()])
+
+ xmod = X[:,0]
+ ymod = Y[0,:]
+ nxmod = np.shape(xmod)[0]
+
+ values = fop_pca_train.T 
+ kernel = stats.gaussian_kde(values)
+ Z = np.reshape(kernel(positions).T, X.shape) 
+ clevels = kdestats.confmap(Z.T, [clevel])
+ 
+ #make a scatter plot
+ fig = plt.figure()
+ ax1 = fig.add_subplot(111)
+ ax1.scatter(fop_pca_train[:,0],fop_pca_train[:,1])
+ ax1.set_xlabel('PCA 1')
+ ax1.set_ylabel('PCA 2')
+ ax1.set_title('PCA Eigen Vector Plot (train mode)')
+ ax1.imshow(np.rot90(Z), cmap=plt.cm.gist_earth_r,extent=[xmin, xmax, ymin, ymax])
+ plt.show()
+ 
+    
+ ntrain = np.shape(fop_pca_test)[0]
+ idx_x = np.array(np.interp(fop_pca_test[:,0],fop_pca_train[:,0],np.arange(ntrain)),dtype='int')
+ idx_y = np.array(np.interp(fop_pca_test[:,1],fop_pca_train[:,1],np.arange(ntrain)),dtype='int') 
+ zdat = Z[idx_x,idx_y]
+ print 'here'
+ for i in range(len(clevels)):
+  idgood = np.where(zdat > clevels[i])[0]
+  idbad = np.where(zdat < clevels[i])[0]
+
+  fig = plt.figure()
+  ax1 = fig.add_subplot(111)
+  ax1.scatter(fop_pca_train[:,0],fop_pca_train[:,1],label='training points')
+  ax1.set_xlabel('PCA 1')
+  ax1.set_ylabel('PCA 2')
+  ax1.set_title('PCA Eigen Vector Plot (test mode)')
+  print np.shape(fop_pca_train),np.shape(Z)
+  ax1.contour(X,Y, Z, clevels)
+  ax1.scatter(fop_pca_test[idbad,0],fop_pca_test[idbad,1],label='outliers test data',color='r')
+  ax1.scatter(fop_pca_test[idgood,0],fop_pca_test[idgood,1],label='good points test data',color='black')
+  ax1.imshow(np.rot90(Z), cmap=plt.cm.gist_earth_r,extent=[xmin, xmax, ymin, ymax])
+  plt.legend()
+  plt.show()
+  return(zdat,Z,idx_x,idx_y,idbad,fop_pca_train,fop_pca_test)
+
+
+# In[23]:
+
+
+#introduce some time-varying noise into the model
+sd_ts = 4.0
+sd_epoch = 50.0
+amp_ts_max = 100
+amp_epoch = 100.0
+mean_ts = 53.0
+mean_epoch = 600.0
+
+
+
+nts = 100
+nepoch = 1000
+dat = np.random.randn(nepoch*nts).reshape(nepoch,nts)
+dat_train = np.array(dat)
+for i in range(nts):
+ amp_ts   = amp_ts_max * np.exp(-0.5*((i*1. - mean_ts)/sd_ts)**2)
+ dat[:,i] = dat[:,i] + amp_ts* np.exp(-0.5*((np.arange(nepoch) - mean_epoch)/sd_epoch)**2) 
+ 
+ 
+plt.clf()
+fig = plt.figure()
+ax1 = fig.add_subplot(111)
+a = ax1.imshow(dat.T,aspect = 'auto')
+plt.colorbar(a)
+plt.show()
+
+zdat,Z,idx_x,idx_y,idbad,fop_pca_train,fop_pca_test = evd(dat,dat_train,clevel=0.9973)
+#xmod,ymod,Z,pcafit,clevels = evd(dat_train,pca_inp=[],xkde=[],ykde=[],zkde=[],clevel=0.9973)
+#zdat,idbad = evd(dat,pca_inp = pcafit, xkde=xmod,ykde=ymod,zkde=Z,clevel=clevels)
+
+
+# In[ ]:
+
+
+zdat,Z,idx_x,idx_y,idbad
+
+
 # Now define a function to tie everything together
 
-# In[9]:
+# In[11]:
 
 
 def outlier_smooth(data_y,sd_check=5,fname='running median',runtype='series',filter_size = 5,
