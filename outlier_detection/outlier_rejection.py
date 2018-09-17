@@ -409,7 +409,7 @@ def movingaverage(x,y, window):
   return(sma_x,sma_y)
 
 #calculate each of the features
-def features(data_y,window = 10):
+def features(data_y,window = 10,plots='show'):
     nfeatures = 9
     
     nepoch,nts = np.shape(data_y)
@@ -486,16 +486,20 @@ def features(data_y,window = 10):
     
     
     #make diagnostic plot
-    gs1 = gridspec.GridSpec(nfeatures, 1)
-    gs1.update(left=0.1, right=0.9, bottom=0.1,top = 0.9, wspace=0.05,hspace = 0.0)
-    for i in range(nfeatures):
-     ax1 = plt.subplot(gs1[i, 0])
-     ax1.plot(features[:,i],label=labels[i])
-     #ax1.set_ylabel(labels[i])
-     if (i == nfeatures - 1):
-      ax1.set_xlabel('Time series ID')
-     ax1.text(1.1,0.5,labels[i],ha='left',transform=ax1.transAxes)
-    plt.show()
+    if (plots != ''):
+     gs1 = gridspec.GridSpec(nfeatures, 1)
+     gs1.update(left=0.1, right=0.9, bottom=0.1,top = 0.9, wspace=0.05,hspace = 0.0)
+     for i in range(nfeatures):
+      ax1 = plt.subplot(gs1[i, 0])
+      ax1.plot(features[:,i],label=labels[i])
+      #ax1.set_ylabel(labels[i])
+      if (i == nfeatures - 1):
+       ax1.set_xlabel('Time series ID')
+      ax1.text(1.1,0.5,labels[i],ha='left',transform=ax1.transAxes)
+      if (plots == 'show'):
+       plt.show()
+      else:
+       plt.savefig(plots)
      
     return(features,labels)
 
@@ -513,13 +517,13 @@ def features(data_y,window = 10):
 #       xkde,ykde = np.array(nres) The x and y values of the kernal density estimation
 #        zkde = np.array((nres,nres)) The kde estimated from the training data
 #       clevel the confidence level to consider new points outliers
-
-def evd(data_test,data_train,clevel=0.9973):
+from sklearn.decomposition import PCA
+def evd(data_test,data_train,clevel=0.9973,plots='show'):
  
 
     
- op_test = features(data_test,window=10)
- op_train = features(data_train,window=10)
+ op_test = features(data_test,window=10,plots=plots)
+ op_train = features(data_train,window=10,plots=plots)
  #normalise the feature matrix
  f_train,flab_train = op_train
  f_test,flab_test = op_test
@@ -533,7 +537,6 @@ def evd(data_test,data_train,clevel=0.9973):
      fop_test[:,i] = (f_test[:,i] - np.mean(f_test[:,i]))/np.std(f_test[:,i])  
  
  #perform PCA
- from sklearn.decomposition import PCA
  pca = PCA(n_components=2)
  pcafit = pca.fit(fop_train)
  fop_pca_train = pcafit.fit_transform(fop_train)
@@ -560,14 +563,18 @@ def evd(data_test,data_train,clevel=0.9973):
  clevels = kdestats.confmap(Z.T, [clevel])
  
  #make a scatter plot
- fig = plt.figure()
- ax1 = fig.add_subplot(111)
- ax1.scatter(fop_pca_train[:,0],fop_pca_train[:,1])
- ax1.set_xlabel('PCA 1')
- ax1.set_ylabel('PCA 2')
- ax1.set_title('PCA Eigen Vector Plot (train mode)')
- ax1.imshow(np.rot90(Z), cmap=plt.cm.gist_earth_r,extent=[xmin, xmax, ymin, ymax])
- plt.show()
+ if (plots != ''):
+  fig = plt.figure()
+  ax1 = fig.add_subplot(111)
+  ax1.scatter(fop_pca_train[:,0],fop_pca_train[:,1])
+  ax1.set_xlabel('PCA 1')
+  ax1.set_ylabel('PCA 2')
+  ax1.set_title('PCA Eigen Vector Plot (train mode)')
+  ax1.imshow(np.rot90(Z), cmap=plt.cm.gist_earth_r,extent=[xmin, xmax, ymin, ymax])
+  if (plots == 'show'):
+   plt.show()
+  else:
+   plt.savefig(plots)
  
     
  ntrain = np.shape(fop_pca_test)[0]
@@ -579,31 +586,38 @@ def evd(data_test,data_train,clevel=0.9973):
   idbad = np.where(zdat < clevels[i])[0]
   
   #make plot of contour levels showing good and bad time series
-  fig = plt.figure()
-  ax1 = fig.add_subplot(111)
-  ax1.scatter(fop_pca_train[:,0],fop_pca_train[:,1],label='training points')
-  ax1.set_xlabel('PCA 1')
-  ax1.set_ylabel('PCA 2')
-  ax1.set_title('PCA Eigen Vector Plot (test mode)')
-  ax1.contour(X,Y, Z, clevels)
-  ax1.scatter(fop_pca_test[idbad,0],fop_pca_test[idbad,1],label='outliers test data',color='r')
-  ax1.scatter(fop_pca_test[idgood,0],fop_pca_test[idgood,1],label='good points test data',color='black')
-  ax1.imshow(np.rot90(Z), cmap=plt.cm.gist_earth_r,extent=[xmin, xmax, ymin, ymax])
-  plt.legend()
-  plt.show()
-    
+  if (plots != ''):
+   fig = plt.figure()
+   ax1 = fig.add_subplot(111)
+   ax1.scatter(fop_pca_train[:,0],fop_pca_train[:,1],label='training points')
+   ax1.set_xlabel('PCA 1')
+   ax1.set_ylabel('PCA 2')
+   ax1.set_title('PCA Eigen Vector Plot (test mode)')
+   ax1.contour(X,Y, Z, clevels)
+   ax1.scatter(fop_pca_test[idbad,0],fop_pca_test[idbad,1],label='outliers test data',color='r')
+   ax1.scatter(fop_pca_test[idgood,0],fop_pca_test[idgood,1],label='good points test data',color='black')
+   ax1.imshow(np.rot90(Z), cmap=plt.cm.gist_earth_r,extent=[xmin, xmax, ymin, ymax])
+   plt.legend()
+   if (plots == 'show'):
+    plt.show()
+   else:
+    plt.savefig(plots)
     
   #plot the time series in an imshow flagging up outlying series
-  fig = plt.figure()
-  ax1 = fig.add_subplot(111)
-  dis = data_test.T
-  dis[idbad,:] = np.nan
-  col = ax1.imshow(dis,aspect='auto')
-  plt.colorbar(col,label='Time series value')
-  ax1.set_xlabel('Time')
-  ax1.set_ylabel('Time series ID')
-  plt.show()
-    
+  if (plots != ''):
+   fig = plt.figure()
+   ax1 = fig.add_subplot(111)
+   dis = data_test.T
+   dis[idbad,:] = np.nan
+   col = ax1.imshow(dis,aspect='auto')
+   plt.colorbar(col,label='Time series value')
+   ax1.set_xlabel('Time')
+   ax1.set_ylabel('Time series ID')
+   if (plots == 'show'):
+    plt.show()
+   else:
+    plt.savefig(plots)
+
   return(zdat,Z,idx_x,idx_y,idbad,fop_pca_train,fop_pca_test)
 
 
@@ -647,9 +661,99 @@ if (demo_evd == 1):
 
 
 
+# \section{Non-stationarity}
+# It is relatively easy to update this model to allow for non-stationarity. We just define a window of length 'w', input the most recent w epochs of known normal behaviour (a training data set) and the most recent w epochs. Using KDE, if > 0.5 the new observsations lie outside the confidence region of the training data, we update the KDE contours as the new 'normal behaviour'.
+
+# In[ ]:
+
+
+def evd_nonstat(train_new,test_new,clevel=0.9973,frac_check=0.5):
+    
+ 
+ zdat,Z,idx_x,idx_y,idbad,fop_pca_train,fop_pca_test =  evd(test_new,train_new,clevel=clevel,plots='')
+ 
+ nwindow,nts = np.shape(test_new)
+ frac = 1.*np.shape(idbad)[0]/nwindow
+ if (frac > frac_check):
+  print 'new "normal" behaviour detected. All good'
+  idbad_out = []
+  newnorm = 1
+ else:
+  idbad_out = idx_y
+  newnorm = 0
+ 
+ return(idbad_out,newnorm)
+
+#perform the above routine over a whole time series retiurning the indicees of bad combinations
+#of time series and epoch id_out[epoch,ts]
+def evd_evolve(train,test,window=20,clevel=0.9973):
+ nepoch,nts = np.shape(test)
+ ilo = 0
+ train_in = train#train[ilo:window,:]
+ id_out = np.zeros((0,2))
+ for i in range(nepoch-window):
+  test_in  = test[i:i+window,:]
+  idbad_out,newnorm = evd_nonstat(train_in,test_in,clevel=0.9973,frac_check=0.5) 
+  
+  if (newnorm == 1): 
+   train_in = test_in
+
+  else:
+   nbad = np.shape(idbad_out)[0]
+   idnow = np.ones(nbad)*i
+   idn = np.zeros((nbad,2))
+   idn[:,0]=idnow
+   idn[:,1]=np.array(idbad_out)
+   id_out = np.vstack((id_out,idn))
+   
+  
+ return(id_out)
+    
+demo_nonstat = 1
+if (demo_nonstat == 1):
+ #introduce some time-varying noise into the model
+ sd_ts = 4.0
+ sd_epoch = 50.0
+ amp_ts_max = 100
+ amp_epoch = 100.0
+ mean_ts = 53.0
+ mean_epoch = 600.0
+ 
+ 
+ 
+ nts = 100
+ nepoch = 1000
+ dat = np.random.randn(nepoch*nts).reshape(nepoch,nts)
+ dat_train = np.array(dat)
+ for i in range(nts):
+  amp_ts   = amp_ts_max * np.exp(-0.5*((i*1. - mean_ts)/sd_ts)**2)
+  for i2 in range(nepoch):
+   if (i2 > mean_epoch):
+    dat[i2,i] = dat[i2,i] + amp_ts
+   else:
+    dat[i2,i] = dat[i2,i] + amp_ts*np.exp(-0.5*((i2 - mean_epoch)/sd_epoch)**2) 
+  
+ plt.clf()
+ fig = plt.figure()
+ ax1 = fig.add_subplot(111)
+ a = ax1.imshow(dat.T,aspect = 'auto')
+ plt.colorbar(a,label='Time series value')
+ ax1.set_xlabel('Time')
+ ax1.set_ylabel('Time series ID')
+ plt.show()
+
+
+
+
+
+ #now test the function
+ id = evd_evolve(dat_train,dat,window=20,clevel=0.9973)
+
+
+
 # Now define a function to tie everything together
 
-# In[11]:
+# In[ ]:
 
 
 #INPUTS
