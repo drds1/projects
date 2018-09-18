@@ -15,6 +15,7 @@ import scipy.optimize as mcf
 import scipy.signal as ssig
 import matplotlib.gridspec as gridspec
 from statsmodels import robust
+from scipy import stats
 
 
 # Define the outlier rejection function. 
@@ -664,92 +665,153 @@ if (demo_evd == 1):
 # \section{Non-stationarity}
 # It is relatively easy to update this model to allow for non-stationarity. We just define a window of length 'w', input the most recent w epochs of known normal behaviour (a training data set) and the most recent w epochs. Using KDE, if > 0.5 the new observsations lie outside the confidence region of the training data, we update the KDE contours as the new 'normal behaviour'.
 
-# In[ ]:
+# import os 
+# 
+# def evd_nonstat(train_new,test_new,clevel=0.9973,frac_check=0.5):
+#     
+#  
+#  zdat,Z,idx_x,idx_y,idbad,fop_pca_train,fop_pca_test = \
+#  evd(test_new,train_new,clevel=clevel,plots='show')
+#  
+#  nwindow,nts = np.shape(test_new)
+#  frac = 1.*np.shape(idbad)[0]/nwindow
+#  if (frac > frac_check):
+#   print 'new "normal" behaviour detected. All good'
+#   idbad_out = []
+#   newnorm = 1
+#  else:
+#   idbad_out = idx_y
+#   newnorm = 0
+#  
+#  return(idbad_out,newnorm,fop_pca_train,fop_pca_test)
+# 
+# #perform the above routine over a whole time series retiurning the indicees of bad combinations
+# #of time series and epoch id_out[epoch,ts]
+# def evd_evolve(train,test,window=20,clevel=0.9973,diagplots=1):
+#  nepoch,nts = np.shape(test)
+#  ilo = 0
+#  train_in = train#train[ilo:window,:]
+#  id_out = np.zeros((0,2))
+#  for i in range(nepoch-window):
+#   test_in  = test[i:i+window,:]
+#   print np.shape(train_in),np.shape(test_in)
+#   idbad_out,newnorm,fop_pca_train,fop_pca_test = evd_nonstat(train_in,test_in,clevel=0.9973,frac_check=0.5) 
+#   idbad_out = np.array(idbad_out)
+#   print 'herer',i
+#   if (newnorm == 1): 
+#    train_in = test_in
+#    print 'new behavour',i
+#   else:
+#    nbad = np.shape(idbad_out)[0]
+#    idnow = np.ones(nbad)*i
+#    idn = np.zeros((nbad,2))
+#    idn[:,0]=idnow
+#    idn[:,1]=np.array(idbad_out)
+#    id_out = np.vstack((id_out,idn))
+#    
+#    if (diagplots == 1):
+#     if (i == 0):
+#      os.system('mkdir ./diagplots_evdevolve')
+#     fig = plt.figure()
+#     ax1 = fig.add_subplot(211)
+#     ax1.scatter(fop_pca_train[:,0],fop_pca_train[:,1],label='train')
+#     ax1.scatter(fop_pca_test[:,0],fop_pca_test[:,1],label='test good')
+#     ax1.scatter(fop_pca_test[idbad_out,0],fop_pca_test[idbad_out,1],label='test bad')
+#   
+#     #plot confidence kernel
+#     xmin,xmax = min(np.min(fop_pca_train[:,0]),np.min(fop_pca_test[:,0])),max(np.max(fop_pca_train[:,0]),np.max(fop_pca_test[:,0]))
+#     ymin,ymax = min(np.min(fop_pca_train[:,1]),np.min(fop_pca_test[:,1])),max(np.max(fop_pca_train[:,1]),np.max(fop_pca_test[:,1]))
+#     X, Y = np.mgrid[xmin:xmax:100j, ymin:ymax:100j]
+#     positions = np.vstack([X.ravel(), Y.ravel()])
+#     xmod = X[:,0]
+#     ymod = Y[0,:]
+#     nxmod = np.shape(xmod)[0]
+#     values = fop_pca_train.T 
+#     kernel = stats.gaussian_kde(values)
+#     Z = np.reshape(kernel(positions).T, X.shape) 
+#     clevels = kdestats.confmap(Z.T, [clevel])
+#     ax1.contour(X,Y, Z, clevels)
+#     
+#     ax1.set_title('time '+np.str(i))
+#     ax1.legend()
+#     ax2 = fig.add_subplot(212)
+#     tnew = np.array(test)
+#     tnew[i:i+window,idbad_out] = np.nan
+#     ax2.imshow(tnew.T,aspect='auto')
+#     xl = list(ax2.get_xlim())
+#     yl = list(ax2.get_ylim())
+#     ax2.plot([i]*2,yl,color='r')
+#     ax2.plot([i+window]*2,yl,color='r')
+#     plt.savefig('./diagplots_evdevolve/fig_evde_'+"%04d" % i +'.pdf')
+# 
+#  id_out = np.array(id_out,dtype='int')
+#     
+#  
+#  return(id_out)
+#     
+# demo_nonstat = 1
+# if (demo_nonstat == 1):
+#  #introduce some time-varying noise into the model
+#  sd_ts = 4.0
+#  sd_epoch = 50.0
+#  amp_ts_max = 100
+#  amp_epoch = 100.0
+#  mean_ts = 53.0
+#  mean_epoch = 600.0
+#  
+#  
+#  
+#  nts = 100
+#  nepoch = 1000
+#  dat = np.random.randn(nepoch*nts).reshape(nepoch,nts)
+#  dat_train = np.array(dat)
+#  for i in range(nts):
+#   amp_ts   = amp_ts_max * np.exp(-0.5*((i*1. - mean_ts)/sd_ts)**2)
+#   for i2 in range(nepoch):
+#    if (i2 > mean_epoch):
+#     dat[i2,i] = dat[i2,i] + amp_ts
+#    else:
+#     dat[i2,i] = dat[i2,i] + amp_ts*np.exp(-0.5*((i2 - mean_epoch)/sd_epoch)**2) 
+#   
+#  plt.clf()
+#  fig = plt.figure()
+#  ax1 = fig.add_subplot(111)
+#  a = ax1.imshow(dat.T,aspect = 'auto')
+#  plt.colorbar(a,label='Time series value')
+#  ax1.set_xlabel('Time')
+#  ax1.set_ylabel('Time series ID')
+#  plt.show()
+# 
+# 
+# 
+# 
+# 
+# 
+# 
 
+#  #now test the function
+#  id = evd_evolve(dat_train,dat,window=20,clevel=0.9973)
+#  id = np.array(id,dtype='int')
+#  dat.T[id[:,0],id[:,1]]=np.nan
+#  plt.clf()
+#  fig = plt.figure()
+#  ax1 = fig.add_subplot(111)
+#  a = ax1.imshow(dat.T,aspect = 'auto')
+#  plt.colorbar(a,label='Time series value post nan')
+#  ax1.set_xlabel('Time')
+#  ax1.set_ylabel('Time series ID')
+#  plt.show()
 
-def evd_nonstat(train_new,test_new,clevel=0.9973,frac_check=0.5):
-    
- 
- zdat,Z,idx_x,idx_y,idbad,fop_pca_train,fop_pca_test =  evd(test_new,train_new,clevel=clevel,plots='')
- 
- nwindow,nts = np.shape(test_new)
- frac = 1.*np.shape(idbad)[0]/nwindow
- if (frac > frac_check):
-  print 'new "normal" behaviour detected. All good'
-  idbad_out = []
-  newnorm = 1
- else:
-  idbad_out = idx_y
-  newnorm = 0
- 
- return(idbad_out,newnorm)
-
-#perform the above routine over a whole time series retiurning the indicees of bad combinations
-#of time series and epoch id_out[epoch,ts]
-def evd_evolve(train,test,window=20,clevel=0.9973):
- nepoch,nts = np.shape(test)
- ilo = 0
- train_in = train#train[ilo:window,:]
- id_out = np.zeros((0,2))
- for i in range(nepoch-window):
-  test_in  = test[i:i+window,:]
-  idbad_out,newnorm = evd_nonstat(train_in,test_in,clevel=0.9973,frac_check=0.5) 
-  
-  if (newnorm == 1): 
-   train_in = test_in
-
-  else:
-   nbad = np.shape(idbad_out)[0]
-   idnow = np.ones(nbad)*i
-   idn = np.zeros((nbad,2))
-   idn[:,0]=idnow
-   idn[:,1]=np.array(idbad_out)
-   id_out = np.vstack((id_out,idn))
-   
-  
- return(id_out)
-    
-demo_nonstat = 1
-if (demo_nonstat == 1):
- #introduce some time-varying noise into the model
- sd_ts = 4.0
- sd_epoch = 50.0
- amp_ts_max = 100
- amp_epoch = 100.0
- mean_ts = 53.0
- mean_epoch = 600.0
- 
- 
- 
- nts = 100
- nepoch = 1000
- dat = np.random.randn(nepoch*nts).reshape(nepoch,nts)
- dat_train = np.array(dat)
- for i in range(nts):
-  amp_ts   = amp_ts_max * np.exp(-0.5*((i*1. - mean_ts)/sd_ts)**2)
-  for i2 in range(nepoch):
-   if (i2 > mean_epoch):
-    dat[i2,i] = dat[i2,i] + amp_ts
-   else:
-    dat[i2,i] = dat[i2,i] + amp_ts*np.exp(-0.5*((i2 - mean_epoch)/sd_epoch)**2) 
-  
- plt.clf()
- fig = plt.figure()
- ax1 = fig.add_subplot(111)
- a = ax1.imshow(dat.T,aspect = 'auto')
- plt.colorbar(a,label='Time series value')
- ax1.set_xlabel('Time')
- ax1.set_ylabel('Time series ID')
- plt.show()
-
-
-
-
-
- #now test the function
- id = evd_evolve(dat_train,dat,window=20,clevel=0.9973)
-
-
+# id = np.array(id,dtype='int')
+# dat[id[:,0],id[:,1]]=np.nan
+# plt.clf()
+# fig = plt.figure()
+# ax1 = fig.add_subplot(111)
+# a = ax1.imshow(dat.T,aspect = 'auto')
+# plt.colorbar(a,label='Time series value post nan')
+# ax1.set_xlabel('Time')
+# ax1.set_ylabel('Time series ID')
+# plt.show()
 
 # Now define a function to tie everything together
 
