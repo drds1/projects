@@ -94,7 +94,10 @@ plt.savefig('test_pspec_diagnose.pdf')
 #p0=-1,bpl = [0.5,2,2],messages=0)
 
 from statsmodels.tsa.seasonal import seasonal_decompose
-decomposition = seasonal_decompose(dat[:,1], freq=10.)  
+decomposition = seasonal_decompose(dat[:,1], freq=10)  
+trend         = decomposition.trend
+seasonal      = decomposition.seasonal
+res           = decomposition.resid
 fig = plt.figure()  
 fig = decomposition.plot()  
 fig.set_size_inches(15, 8)
