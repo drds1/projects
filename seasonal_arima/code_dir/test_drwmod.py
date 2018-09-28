@@ -101,3 +101,14 @@ res           = decomposition.resid
 fig = plt.figure()  
 fig = decomposition.plot()  
 fig.set_size_inches(15, 8)
+
+
+
+
+mod = sm.tsa.statespace.SARIMAX(df.riders, trend='n', order=(0,1,0), seasonal_order=(1,1,1,12))
+results = mod.fit()
+print results.summary()
+
+#this is a good tutorial follow for timeseries forecasting
+#https://towardsdatascience.com/an-end-to-end-project-on-time-series-analysis-and-forecasting-with-python-4835e6bf050b
+
