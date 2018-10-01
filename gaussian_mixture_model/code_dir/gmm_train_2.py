@@ -2,7 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.mixture import GaussianMixture
 
-
+#based on this a little http://www.astroml.org/book_figures/chapter4/fig_GMM_1D.html
+#but mainly my own training data and trial and error teaching
 
 
 #function to use aic or bic to identify optimum number of components in GMM
