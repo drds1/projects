@@ -3,7 +3,10 @@ import myfitrw_092018 as mfr
 import mylcgen as mlcg
 import matplotlib.pylab as plt
 
-
+import statsmodels.api as sm  
+from statsmodels.tsa.stattools import acf  
+from statsmodels.tsa.stattools import pacf
+from statsmodels.tsa.seasonal import seasonal_decompose
 
 tlen = 3000.0
 dt   = 1.0
@@ -13,7 +16,7 @@ period = [365.0,180.0]
 color= ['r','b']
 
 #amplitude relative to standard deviation of random time series
-amp_p  = [1.1,1.1]
+amp_p  = [3.0,3.0]
 
 #generate fake data with a large amplitude period
 
@@ -101,13 +104,43 @@ res           = decomposition.resid
 fig = plt.figure()  
 fig = decomposition.plot()  
 fig.set_size_inches(15, 8)
+plt.savefig('arima.pdf')
 
 
 
 
-mod = sm.tsa.statespace.SARIMAX(df.riders, trend='n', order=(0,1,0), seasonal_order=(1,1,1,12))
+startforecast = 2600
+endforecast   = 3000
+
+mod = sm.tsa.statespace.SARIMAX(dat[:startforecast,1], trend='n', order=(0,1,0), seasonal_order=(1,1,1,12))
 results = mod.fit()
-print results.summary()
+
+plt.clf()
+fig = plt.figure()
+ax1 = fig.add_subplot(111)
+#get condfidence limits
+pred = results.get_prediction(start = startforecast, end= endforecast)
+ps = pred.summary_frame()
+pslo = np.array(ps['mean_ci_lower'])
+pshi = np.array(ps['mean_ci_upper'])
+pst  = np.arange(startforecast,endforecast+1)
+psmean = np.array(ps['mean'])
+ax1.plot(pst,psmean)
+ax1.plot(dat[:startforecast,0],dat[:startforecast,1])
+
+ax1.fill_between(pst,pslo,pshi,alpha=0.2)
+
+ax1.plot(dat[startforecast:,0],dat[startforecast:,1],ls='--',color='k')
+
+plt.savefig('forecast.pdf')
+
+
+
+
+mfr.fitrw([dat[:startforecast,0]],[dat[:startforecast,1]],[dat[:startforecast,1]*0.0+1],floin=-1,fhiin=0.1,plot_tit='fig_myrwfit',dtresin=dat[:,0],nits = 100,tplotlims=[],extra_f=[1./365,1./180.],p0=-1,bpl = [0.5,2,2],messages=0)
+#mod = sm.tsa.statespace.SARIMAX(df.riders, trend='n', order=(0,1,0), seasonal_order=(1,1,1,12))
+#results = mod.fit()
+#print results.summary()
 
 #this is a good tutorial follow for timeseries forecasting
 #https://towardsdatascience.com/an-end-to-end-project-on-time-series-analysis-and-forecasting-with-python-4835e6bf050b
