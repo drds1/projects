@@ -57,11 +57,11 @@ N = np.arange(1, 11)
 models = [None for i in range(len(N))]
 
 for i in range(len(N)):
-    models[i] = GMM(N[i]).fit(X)
+    models[i] = GMM(N[i]).fit(X[0])
 
 # compute the AIC and the BIC
-AIC = [m.aic(X) for m in models]
-BIC = [m.bic(X) for m in models]
+AIC = [m.aic(X[0]) for m in models]
+BIC = [m.bic(X[0]) for m in models]
 
 #------------------------------------------------------------
 # Plot the results
@@ -80,11 +80,12 @@ ax = fig.add_subplot(131)
 M_best = models[np.argmin(AIC)]
 
 x = np.linspace(-6, 6, 1000)
-logprob, responsibilities = M_best.eval(x)
+logprob = M_best.score_samples(X[0])
+responsibilities = M_best.predict_proba(X[0])
 pdf = np.exp(logprob)
 pdf_individual = responsibilities * pdf[:, np.newaxis]
 
-ax.hist(X, 30, normed=True, histtype='stepfilled', alpha=0.4)
+ax.hist(X[0], 30, normed=True, histtype='stepfilled', alpha=0.4)
 ax.plot(x, pdf, '-k')
 ax.plot(x, pdf_individual, '--k')
 ax.text(0.04, 0.96, "Best-fit Mixture",
@@ -121,4 +122,4 @@ ax.text(-5, 0.3, 'class 1', rotation='vertical')
 ax.text(0, 0.5, 'class 2', rotation='vertical')
 ax.text(3, 0.3, 'class 3', rotation='vertical')
 
-plt.show()
+plt.savefig('fig_testgmm.pdf')
