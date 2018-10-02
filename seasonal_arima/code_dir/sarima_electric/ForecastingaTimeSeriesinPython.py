@@ -1,4 +1,4 @@
-
+#https://medium.com/@josemarcialportilla/using-python-and-auto-arima-to-forecast-seasonal-time-series-90877adff03c
 # coding: utf-8
 
 # # How to Forecast a Time Series with Python

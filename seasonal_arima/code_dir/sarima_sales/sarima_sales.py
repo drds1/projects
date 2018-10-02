@@ -1,3 +1,5 @@
+#http://barnesanalytics.com/sarima-models-using-statsmodels-in-python
+
 import pandas as pd
 import statsmodels.api as sm
 import matplotlib.pyplot as plt
