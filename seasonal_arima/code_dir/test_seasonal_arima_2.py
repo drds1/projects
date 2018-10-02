@@ -122,7 +122,7 @@ training, testing = series[0:split_point], series[split_point:]
  
 
 #since the data is multiplicative apply log training (sarima can only do additive evolution?)
-training = np.log(training)
+#training = np.log(training)
 
 
 #since we have positive linear trend apply differencing of 1 period
@@ -178,7 +178,10 @@ K = len(testing) #number of time steps we want to forecast (multi step forecasti
 forecast = model_fit.forecast(K) #apply the model to forecast out K time steps
 forecast = np.exp(forecast) #transform back to the orriginal non-log scale
 
-
+pred = model_fit.get_prediction(start = startforecast, end= endforecast)
+ps = pred.summary_frame()
+pslo = np.array(ps['mean_ci_lower'])
+pshi = np.array(ps['mean_ci_upper'])
 
 
 

@@ -16,7 +16,7 @@ period = [365.0,180.0]
 color= ['r','b']
 
 #amplitude relative to standard deviation of random time series
-amp_p  = [3.0,3.0]
+amp_p  = [0.1,0.1]
 
 #generate fake data with a large amplitude period
 
@@ -138,7 +138,7 @@ plt.savefig('forecast.pdf')
 
 
 parmout,covout,freq,tplot,xplot,xplotsd,p0_out,w0,dw,sig2_prior=mfr.fitrw([dat[:startforecast,0]],[dat[:startforecast,1]],[0.95],
-floin=1./3000,fhiin=1.0,plot_tit='fig_myrwfit',dtresin=dat[:,0],nits = 100,tplotlims=[],extra_f=[1./3000,1./365,1./180.],p0=-1,bpl = [0.5,2,2],
+floin=1./6000,fhiin=1.0,plot_tit='fig_myrwfit',dtresin=dat[:,0],nits = 100,tplotlims=[],extra_f=[1./365,1./180.],p0=-1,bpl = [0.5,2,2],
 messages=0,prior = 1.0)
 #mod = sm.tsa.statespace.SARIMAX(df.riders, trend='n', order=(0,1,0), seasonal_order=(1,1,1,12))
 #results = mod.fit()
