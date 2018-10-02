@@ -14,7 +14,7 @@ import mylcgen as mlc
 
 thi = 100.0
 dt = 1.0
-tforecast = 20.0
+tforecast = 50.0
 
 
 dat = mlc.mylcgen(datfile='',p0=0.01,f0=0.1,a=-2,b=-2,tlo=0,thi=thi+tforecast,dt=dt,ploton=0,iseed=1,meannorm = -1., sdnorm = -1.0)
