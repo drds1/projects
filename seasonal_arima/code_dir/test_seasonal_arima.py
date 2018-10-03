@@ -150,9 +150,15 @@ print results.summary()
 
 
 
-#perform forescast
+#perform forecast
 df['forecast'] = results.predict(start = startforecast, end= endforecast, dynamic= True)  
 ax1 = df[['riders', 'forecast']].plot(figsize=(12, 8)) 
+
+#convert the ftot data frame 'date' column from object to date_time object
+#... and all numerical quantities to floats
+print 'convert format'
+ftot = df.convert_objects(convert_dates='coerce',convert_numeric=True)
+print 'convert format - done'
 
 #get condfidence limits
 pred = results.get_prediction(start = startforecast, end= endforecast)
