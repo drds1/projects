@@ -38,7 +38,7 @@ def aic_test(dfin,order=[5,5,5]):
 
 def cv_test(dfin,order=[5,5,5],fraction_cv = 0.8):
  na,nb,nc = order
- opsave = np.zeros((0,4))
+ opsave = np.zeros((0,5))
  ndat   = dfin.size
  ilo    = np.int(fraction_cv*ndat)
  train  = dfin[:ilo]
@@ -54,7 +54,8 @@ def cv_test(dfin,order=[5,5,5],fraction_cv = 0.8):
      pred  = results.get_prediction(start = ilo, end = ndat )
      psmod    = pred.summary_frame(alpha=0.05)['mean'].values
      cisq  = (pred - test)**2
-     opsave = np.vstack((opsave,[cisq,ia,ib,ic]))
+     aic   = results.aic
+     opsave = np.vstack((opsave,[cisq,aic,ia,ib,ic]))
     except:
      print 'wrong combination of ia,ib,ic',ia,ib,ic
  idx_sort = np.argsort(opsave[:,0])
