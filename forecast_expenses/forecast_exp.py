@@ -79,7 +79,6 @@ for i in range(nf):
  model=sm.tsa.statespace.SARIMAX(endog=dweek['sum'],order=orderin,seasonal_order=(0,1,0,12),trend='c',enforce_invertibility=False)
  
  results=model.fit()
- results.conf_int(alpha=0.05)
  pred  = results.get_prediction(start = times[-1], end= times[-1]+(times[np.int(nsize*pc_forecast)]-times[0]) )
  
  #set the confidence interval with the alpha_conf argument specified at the top
