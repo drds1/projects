@@ -1,5 +1,6 @@
 #python project to load in numbers spreadsheets for each 
 #exp_xxxx.numbers file in /Users/david/projects/expenses_data
+#seasonal arima model article https://www.analyticsvidhya.com/blog/2018/02/time-series-forecasting-methods/
 
 import numpy as np
 import matplotlib.pylab as plt
@@ -74,6 +75,10 @@ for i in range(nf):
  #use aic to test many different models
  import statsm_aic_test as st
  #op=st.aic_test(dweek['sum'],order=[3,3,3])
+ 
+ 
+ op=st.cv_test(dweek['sum'],order=[5,5,5],fraction_cv = 0.8,diagnostic_plot=1)
+ print 'cv test suggestions',op[0,:]
  orderin = (1,1,0)#np.array(op[0,1:],dtype='int')
  #use data science to forecast future variability
  model=sm.tsa.statespace.SARIMAX(endog=dweek['sum'],order=orderin,seasonal_order=(0,1,0,12),trend='c',enforce_invertibility=False)
