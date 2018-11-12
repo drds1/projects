@@ -10,7 +10,7 @@ import datetime
 import statsmodels.api as sm
 dir_input = '/Users/david/projects/expenses_data'
 #load each file in the spreadsheet directory
-files = glob.glob(dir_input + '/exp_*.csv')*4
+files = glob.glob(dir_input + '/exp_*.csv')*2
 
 
 #percentage time to forecast (e.g a 0.1 of a 100 day time series would forecast to 110 days)
