@@ -134,6 +134,8 @@ else:
 
 ax1.plot(x,y,label='data')
 
+np.savetxt('test_timeseries.dat',y)
+
 xmod = np.arange(tfclo,tfchi,dt)#ps.axes[0]
 ymean = np.array(ps['mean'])
 
