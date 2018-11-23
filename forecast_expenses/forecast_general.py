@@ -102,10 +102,16 @@ nfclo = np.int(tfclo/dt)
 nfchi = np.int(tfchi/dt)
 
 #use statsmodels api to sarima model to forecast future variability
-orderin = (1,1,0)
-model   = sm.tsa.statespace.SARIMAX(endog=signal,order=orderin,seasonal_order=(0,1,0,300),trend='c',enforce_invertibility=False)
+#orderin = (1,1,0)
+#model   = sm.tsa.statespace.SARIMAX(endog=signal,order=orderin,seasonal_order=(0,1,0,300),trend='c',enforce_invertibility=False)
+#results = model.fit()
+#pred    = results.get_prediction(start = nfclo, end= nfchi )
+from statsmodels.tsa.holtwinters import ExponentialSmoothing
+from random import random
+model = ExponentialSmoothing(signal)
 results = model.fit()
-pred    = results.get_prediction(start = nfclo, end= nfchi )
+
+pred = results.predict(start = nfclo, end= nfchi )
 ps      = pred.summary_frame(alpha=alpha_conf)
 pslo    = np.array(ps['mean_ci_lower'])
 pshi    = np.array(ps['mean_ci_upper'])
@@ -115,6 +121,9 @@ npred   = np.shape(pslo)[0]
 
 
 
+# make prediction
+yhat = model_fit.predict(len(data), len(data))
+print(yhat)
 
 
 
