@@ -178,7 +178,7 @@ K = len(testing) #number of time steps we want to forecast (multi step forecasti
 forecast = model_fit.forecast(K) #apply the model to forecast out K time steps
 forecast = np.exp(forecast) #transform back to the orriginal non-log scale
 
-pred = model_fit.get_prediction(start = startforecast, end= endforecast)
+pred = model_fit.get_prediction(start = nd, end= nd+20)
 ps = pred.summary_frame()
 pslo = np.array(ps['mean_ci_lower'])
 pshi = np.array(ps['mean_ci_upper'])
