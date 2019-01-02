@@ -1038,18 +1038,40 @@ class forecast:
 
     #input dates
     def set_dates(self,dates):
+        '''
+        Set the x-axis for the time series (pandas core series date-time series)
+        :param dates: pandas series date time (n_epochs)
+        :return:
+        '''
         self.dates =  dates
 
     #input time series
     def set_main_timeseries(self,x):
+        '''
+        set the input y-axis values for the time series (must have same number of elements as set_dates)
+        :param x: numpy 1d array (n_epochs)
+        :return:
+        '''
         self.x = x
 
     #input additional contributing time series
     def set_contributing_timeseries(self,x_components):
+        '''
+        set addidtional time series components to use in model fitting.
+        Searches for lead/lag relationship to the main time series.
+        Used in forecasting if these compoents lead the main time series,
+        weighted by strength of cross-correlation coefficient at the strongest lead time
+        :param x_components: numpy 2d array (n_epochs, n_components)
+        :return:
+        '''
         self.x_components = x_components
 
     #fit the mode to the historical + additional components
     def fit(self):
+        '''
+        fit the forecast model to the time series (same as predict but no forecasting performed)
+        :return:
+        '''
         output = combine_signal_lag(self.x, self.x_components, self.dates,
                            lag=None, predict=0,diagnostic = False,
                        periods = self.periods, upper_period = 30)
@@ -1061,6 +1083,11 @@ class forecast:
 
     #predict 'days' number of days into the future
     def predict(self,days = 90):
+        '''
+        predict 'days' into the future (default 90)
+        :param days:
+        :return: a list of predictions (length = 'days')
+        '''
         output = combine_signal_lag(self.x, self.x_components, self.dates,
                            lag=None, predict=days,diagnostic = False,
                        periods = self.periods, upper_period = 30)
@@ -1075,6 +1102,10 @@ class forecast:
 
     #produce correlation figure
     def plot(self):
+        '''
+        plot the model/prediction and data time series
+        :return:
+        '''
         plt.close('all')
         fig = plt.figure()
         ax1 = fig.add_subplot(111)

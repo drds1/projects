@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pylab as plt
-import signal_decomp as vsd
+import prediction_functions.signal_decomp as vsd
 from sklearn.metrics import r2_score
 import scipy.optimize as so
 

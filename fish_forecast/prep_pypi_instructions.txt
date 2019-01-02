@@ -1,0 +1,4 @@
+python assemble.py
+pip install .
+python setup.py sdist
+twine upload dist/fish_forecast-0.1.1.tar.gz
