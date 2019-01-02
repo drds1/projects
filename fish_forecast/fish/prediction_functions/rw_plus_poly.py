@@ -1,8 +1,8 @@
 import numpy as np
 import matplotlib.pylab as plt
-import prediction_functions.polyfit as vpf
-import prediction_functions.rw_simple as vrw
-import prediction_functions.rw_poly_combined as vrw
+import polyfit as vpf
+import rw_simple as vrw
+import rw_poly_combined as vrw
 
 
 def rwp(t, y, tgrid=[], order=3, custom_freqs=[], nits=20000):
