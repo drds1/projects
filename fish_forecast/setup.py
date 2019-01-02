@@ -8,4 +8,8 @@ setup(name='fish',
       author_email='ds207@st-andrews.ac.uk',
       license='MIT',
       packages=['fish'],
+      install_requires=[
+      'scikit-learn',
+      'scipy',
+      ],
       zip_safe=False)
