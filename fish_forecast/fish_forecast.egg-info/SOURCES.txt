@@ -1,8 +1,0 @@
-setup.py
-fish_forecast/__init__.py
-fish_forecast.egg-info/PKG-INFO
-fish_forecast.egg-info/SOURCES.txt
-fish_forecast.egg-info/dependency_links.txt
-fish_forecast.egg-info/not-zip-safe
-fish_forecast.egg-info/requires.txt
-fish_forecast.egg-info/top_level.txt
