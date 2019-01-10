@@ -44,7 +44,50 @@ for i in range(lenlag):
 A = A.T
 
 plt.clf()
-tau = lp.TauEstimator(loss_function = lp.Bisquare,lamb=1.0)
+tau = lp.TauEstimator(loss_function = lp.Bisquare,lamb=10.0)
 result = tau.estimate(A,y)
 plt.plot(result[0])
 plt.show()
+
+
+
+
+
+
+
+
+
+##need to build custom regularisation function to allow extra components to be included
+##without the auto correlation penalty
+##see documentation at
+##https://linvpy.readthedocs.io/en/latest/#linvpy.Bisquare
+#
+#a = np.matrix([[1, 2], [3, 4], [5, 6]])
+#y = np.array([1, 2, 3])
+#tiko = lp.Tikhonov()
+#tiko.regularize(a, y, 2)
+#
+#
+#
+#
+#
+## Define your own regularization that extends lp.Regularization
+#class CustomRegularization(lp.Regularization):
+#    pass
+#    
+#    def__init__(self,skip):
+#    	self.skip = skip
+#    # Define your regularization function here
+#    def regularize(self, a, y, lamb=0):
+#        return np.ones(a.shape[1])
+#
+#a = np.matrix([[1, 2], [3, 4], [5, 6]])
+#y = np.array([1, 2, 3])
+#
+## Create your custom tau estimator with custom regularization function
+## Pay attention to pass the loss function as a REFERENCE (without the "()"
+## after the name, and the regularization as an OBJECT, i.e. with the "()").
+#custom_tau = lp.TauEstimator(regularization=CustomRegularization())
+#print custom_tau.estimate(a,y)
+#
+#

@@ -1,4 +1,8 @@
+README.txt
 setup.py
+prediction_functions/RLI.py
+prediction_functions/RLI_linvpy.py
+prediction_functions/RLI_old.py
 prediction_functions/__init__.py
 prediction_functions/ccf_simple.py
 prediction_functions/combine_dataframes.py
@@ -6,6 +10,7 @@ prediction_functions/combine_signal.py
 prediction_functions/convert_df2lc.py
 prediction_functions/convolve_model.py
 prediction_functions/cross_correlation_analysis.py
+prediction_functions/evaluate_model.py
 prediction_functions/forecast_tools.py
 prediction_functions/improve_lag_idea.py
 prediction_functions/lag_figures.py

@@ -49,7 +49,16 @@ def fit_func(x,*coeffs):
     return y
 
 # fit polynomial of a given order conf=0.05 for 95 % , 0.3173 for 1 sigma
-def fit(x, y, sig=None, order=3, xgrid=[], confidence=0.3173, nits=20000, figure_title='', verbose=False):
+def fit(xin, yin, sig=None, order=3, xgrid=[], confidence=0.3173, nits=20000, figure_title='', verbose=False):
+
+    itp = np.argsort(xin)
+    x = xin[itp]
+    y = yin[itp]
+    if sig is not None:
+        if 0 in sig:
+            sig = np.ones(len(x))
+
+
     # evaluate model on arbitrary time grid
     if (xgrid != []):
         xg = np.array(xgrid)
@@ -87,6 +96,9 @@ def fit(x, y, sig=None, order=3, xgrid=[], confidence=0.3173, nits=20000, figure
     else:
         w = 1./sig
         xp = np.sum(x / sig ** 2) / np.sum(1. / sig ** 2)
+    if xp != xp:
+        xp = np.mean(x)
+
 
 
     #coefs, cov = np.polyfit(x - xp, y, w = w, deg=oi, full=False, cov=True)
