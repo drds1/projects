@@ -112,12 +112,13 @@ def fit(xin, yin, sig=None, order=3, xgrid=[], confidence=0.3173, nits=20000, fi
     if sig is None:
         cov_expansion = np.sum((yg_itp - y) ** 2) /ndof
         cov = cov * cov_expansion
-        print('sigma is none')
-        print('ts variance = ',var)
-        print('covariance matrix',cov)
-        print('number of points, number of parms, ndof',nx,oi,ndof)
-        print('covariance expansion',cov_expansion)
-        print('theoretical reduced chi squared',np.sum((yg_itp - y)**2)/cov_expansion/ndof   )
+        if verbose is True:
+            print('sigma is none')
+            print('ts variance = ',var)
+            print('covariance matrix',cov)
+            print('number of points, number of parms, ndof',nx,oi,ndof)
+            print('covariance expansion',cov_expansion)
+            print('theoretical reduced chi squared',np.sum((yg_itp - y)**2)/cov_expansion/ndof   )
 
     r2 = r2_score(y,yg_itp)
 

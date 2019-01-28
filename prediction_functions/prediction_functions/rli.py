@@ -49,7 +49,7 @@ def make_A(timeseries_ar,timeseries_nonar,lagrange,nepoch):
     n_ar = len(timeseries_ar)
     n_nonar = len(timeseries_nonar)
     idlo, idhi = lagrange
-    idlag = np.arange(idlo, idhi + 1, 1)
+    idlag = np.arange(idlo, idhi + 1, 1,dtype=int)
     lenlag = len(idlag)
     A_out = np.zeros((0,nepoch))
     for i in range(n_ar):
@@ -65,23 +65,11 @@ def make_A(timeseries_ar,timeseries_nonar,lagrange,nepoch):
                 x[-lagnow:] = A[i2,-1]
             A[i2, :] = x
         A_out = np.vstack((A_out,A))
-    idx_nonar = np.arange(np.shape(A_out)[0],np.shape(A_out)[0]+n_nonar)
     for i in range(n_nonar):
         ts = timeseries_nonar[i]
         A  = np.zeros((1,nepoch))
         A[0,:] = ts
         A_out = np.vstack((A_out,A))
-
-    #ncomponents, ndata = np.shape(A_out)
-    #A_means = np.mean(A_out, axis=1)
-    #A_sd    = np.std(A_out,axis = 1)
-    #A_out = A_out - np.reshape(np.tile(A_means,ndata),(ncomponents,ndata))
-    #A_out = A_out/np.reshape(np.tile(A_sd,ndata),(ncomponents,ndata))
-#
-    #id_zero = np.where(A_sd == 0)[0]
-    #A_out[id_zero,:] = 1
-
-
     return(A_out)
 
 
@@ -137,6 +125,9 @@ class RLI:
         self.sd_response_timeseries = None
         self.sd_ar_timeseries = []
         self.sd_nonar_timeseries = []
+        self.match_sd_model_predictions = False
+        self.extrapolate = 'decay'
+        self.extrapolate_exponential_decayconstant = 1.0
 
     def add_component(self,timeseries,name=None,kind='normal', dates = None):
         ymean,ysd = np.mean(timeseries), np.std(timeseries)
@@ -339,7 +330,6 @@ class RLI:
         self.ar_response = []
         for lag_limits in self.idx_response:
             self.ar_response.append( self.response[lag_limits[0]:lag_limits[1]] )
-            print('lag limits ',lag_limits)
         return(self.ar_response)
 
     def get_lags(self):
@@ -451,11 +441,15 @@ class RLI:
         for i in range(nplots):
             # correlation figures
             ax1 = fig.add_subplot(4,nplots,i+1)
+            try:
+                strev = np.str(np.round(ev[i],2))
+            except:
+                strev = 'nan'
             ax1,fig = correlation_figure(x[i], y[i], 0,
                             order=1, xylabs=(title[i], 'flows (MT)'), figure_title='',
-                            bin=True,
+                            bin=False,
                             axfig=(ax1,fig),
-                            global_title='correlation '+title[i]+' EV='+np.str(np.round(ev[i],2)))
+                            global_title='correlation '+title[i]+' EV = '+strev)
             ax1.tick_params(axis='x', rotation=35)
 
             # time series figures
@@ -483,7 +477,11 @@ class RLI:
                          alpha = 0.5,label = 'confidences',color='y')
         if self.npredict > 0:
             ax3.plot(self.dates_prediction,self.predictions,label='predictions')
-        ax3.legend()
+        ax3.legend(fontsize='xx-small',loc=2)
+        if self.match_sd_model_predictions is True:
+            ax3.set_ylabel('model matching sd \n model_predictions')
+        else:
+            ax3.set_ylabel('model (NOT matching sd \n model predictions)')
         ax3.tick_params(axis='x', rotation=35)
 
 
@@ -595,20 +593,22 @@ class RLI:
 
 
 
-    def optimize_regularisation(self,defaults = np.linspace(1,1.e4,100),verbose = False):
+    def optimize_regularisation(self,defaults = np.logspace(0,4,100),verbose = False):
         aic_optimize = []
         bic_optimize = []
         A_recalc = True
-
         idx_reg = np.arange(self.ncomponents)#np.arange(self.n_ar)
         for i in range(len(defaults)):
             self.regularize_weight = np.zeros(self.ncomponents)
             self.regularize_weight[idx_reg] = defaults[i]
             self.fit(A_recalc=A_recalc)
             self.response_timeseries = self.response_timeseries + self.mean_response_timeseries
+
             aic_optimize.append(self.AIC)
             bic_optimize.append(self.BIC)
             A_recalc = False
+        self.optimize_AIC = self.optimize_AIC + aic_optimize
+        self.optimize_reg = self.optimize_reg + list(defaults)
         self.regularize_weight[idx_reg] = defaults[np.argmin(aic_optimize)]
 
         if verbose is True:
@@ -620,10 +620,17 @@ class RLI:
             print('setting regularize weight to ', defaults[np.argmin(aic_optimize)])
 
 
-    def iterated_optimize_regularisation(self,iterations = 4, ntrials = 100,verbose = False):
-        trials = np.linspace(1, 1.e4, ntrials)
+    def iterated_optimize_regularisation(self,iterations = 1, ntrials = 100,verbose = False,
+                                         trials=None):
+        if trials is None:
+            defaults = np.logspace(0,2,ntrials)
+        else:
+            defaults = trials
+
+        self.optimize_reg = []
+        self.optimize_AIC = []
         for i in range(iterations):
-            self.optimize_regularisation(defaults = trials)
+            self.optimize_regularisation(defaults = defaults)
             rw_now = np.max(self.regularize_weight)
             idx = np.where(trials == rw_now)[0][0]
             idlo = max(0, idx-1)
@@ -634,13 +641,32 @@ class RLI:
                 print('iteration: ',i+1,' of ',iterations,' regularisation =',np.round(rw_now,2))
                 print(iterations, ' iterations. regularisation =', np.round(rw_now, 2))
 
+
+    def plot_aic(self):
+        plt.close()
+        fig = plt.figure()
+        ax1 = fig.add_subplot(111)
+        x = np.array(self.optimize_reg)
+        y = np.array(self.optimize_AIC)
+        idx = np.argsort(x)
+        x = x[idx]
+        y = y[idx]
+        ax1.plot(x,y)
+        ax1.set_xlabel('regularisation')
+        ax1.set_ylabel('AIC')
+
+
     def calc_error_envelopes(self,nsamples = 1000, Acustom = None,verbose = False):
         if Acustom is None:
             Afinal = self.A
         else:
             Afinal = Acustom
         n = np.shape(Afinal)[1]
-        response_samples = np.random.multivariate_normal(self.response,self.cov,size=nsamples)
+        try:
+            response_samples = np.random.multivariate_normal(self.response,self.cov,size=nsamples)
+        except:
+            print('failed to sample RLI response covariance matrix... just using optimum values')
+            response_samples = np.reshape(np.tile(self.response,nsamples),(nsamples,len(self.response)))
         results_samples = np.zeros((n,nsamples))
         for i in range(nsamples):
             results_samples[:,i] = np.dot(response_samples[i,:],Afinal) + self.mean_response_timeseries
@@ -668,11 +694,29 @@ class RLI:
         #pad the orriginal time series
         self.npredict = nsteps
         ts_ar_pad = []
-        for ts in self.input_ar_timeseries:
-            ts_ar_pad.append( np.pad(ts,(0,nsteps),mode='constant',constant_values=(ts[0],ts[-1])) )
         ts_nonar_pad = []
-        for ts in self.input_nonar_timeseries:
-            ts_nonar_pad.append( np.pad(ts,(0,nsteps),mode='constant',constant_values=(ts[0],ts[-1])) )
+
+        #decide how to treat the AR components extrapolated after the last dataa point
+        if self.extrapolate == 'final':
+            for ts in self.input_ar_timeseries:
+                ts_ar_pad.append( np.pad(ts,(0,nsteps),mode='constant',constant_values=(ts[0],ts[-1])) )
+            for ts in self.input_nonar_timeseries:
+                ts_nonar_pad.append( np.pad(ts,(0,nsteps),mode='constant',constant_values=(ts[0],ts[-1])) )
+        elif self.extrapolate == 'zero':
+            for ts in self.input_ar_timeseries:
+                ts_ar_pad.append( np.pad(ts,(0,nsteps),mode='constant',constant_values=(ts[0],0)) )
+            for ts in self.input_nonar_timeseries:
+                ts_nonar_pad.append( np.pad(ts,(0,nsteps),mode='constant',constant_values=(ts[0],0)) )
+        elif self.extrapolate == 'decay':
+            for ts in self.input_ar_timeseries:
+                x = ts[-1]*np.exp(-np.arange(1,nsteps+1,1)/self.extrapolate_exponential_decayconstant)
+                x = np.append(ts,x)
+                ts_ar_pad.append( x )
+            for ts in self.input_nonar_timeseries:
+                x = ts[-1] * np.exp(-np.arange(1, nsteps + 1, 1)/self.extrapolate_exponential_decayconstant)
+                x = np.append(ts, x)
+                ts_nonar_pad.append( x )
+
         Afinal = make_A(ts_ar_pad,ts_nonar_pad,self.lagrange, self.ndata+nsteps)
         #use the correct extrapolation for the trend and fourier time series
         t = np.arange(self.ndata + nsteps)
@@ -687,7 +731,17 @@ class RLI:
                 x = np.cos(2 * np.pi / p * t)
                 idx = idx + 1
             Afinal[self.idx_nonar_fourier[i],:] = x
-        self.predictions = np.dot(self.response,Afinal)[-nsteps:] + self.mean_response_timeseries
+
+        new = np.dot(self.response, Afinal)[-nsteps:]
+        if self.match_sd_model_predictions is True:
+            historic = np.dot(self.response,Afinal)[:nsteps]
+            sd_historic = np.std(historic)
+            sd_new = np.std(new)
+        else:
+            sd_new = 1
+            sd_historic = 1
+
+        self.predictions = new*sd_historic/sd_new + self.mean_response_timeseries
         self.calc_error_envelopes(Acustom = Afinal)
         if type(self.dates_global) is np.ndarray:
             self.dates_prediction = np.arange(self.ndata,self.ndata + nsteps)
@@ -699,7 +753,7 @@ class RLI:
 
     def evaluate_model(self,y_predicted,y_true):
         self.mape, self.rms, self.percent_agree, self.rms_mean, self.mad = \
-            evaluate_model(y_predicted, y_true, verbose=True)
+            evaluate_model(y_predicted, y_true, verbose=False)
 
 if __name__ == '__main__':
     font = {'family': 'normal',

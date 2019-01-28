@@ -56,7 +56,7 @@ def correlation_figure(x,y,lag,
     try:
         yg_med, yg_lo, yg_hi, cov, cisq, cisq_red, bic, aic, rmd, r2 =\
             fit(x_common_fit, y_common_fit, sig=y_common_sig, order=order,
-            xgrid=xgrid, confidence=0.3173, nits=20000, figure_title='', verbose=True)
+            xgrid=xgrid, confidence=0.3173, nits=20000, figure_title='', verbose=False)
 
         ax1.plot(xgrid,yg_med,label=None,color='cyan')
         ax1.fill_between(xgrid,yg_lo,yg_hi,alpha=0.4,color='cyan')

@@ -1,6 +1,6 @@
 import numpy as np
 
-def evaluate_model(y_predicted, y_true, verbose = True):
+def evaluate_model(y_predicted, y_true, verbose = False):
     '''
     Evaluate fit performance
 
@@ -17,7 +17,7 @@ def evaluate_model(y_predicted, y_true, verbose = True):
     idupup = np.where((dy_predicted > 0) & (dy_true > 0))[0]
     iddowndown = np.where((dy_predicted < 0) & (dy_true < 0))[0]
     id_agree = np.append(idupup,iddowndown)
-    percent_agree = 100*np.float(np.shape(id_agree)[0])/(ny-1)
+    percent_agree = 100*np.float(np.shape(id_agree)[0])/max(1,(ny-1))
     mape = 100*np.abs( np.mean(y_predicted - y_true)/np.mean(y_true) )
     rms_mean = np.abs( rms/np.mean(y_true)*100 )
 
