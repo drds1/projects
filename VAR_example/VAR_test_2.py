@@ -48,3 +48,6 @@ for i in range(nsteps):
 	last_vals[:-1,:] = last_vals[1:,:]
 	last_vals[-1,:] = fc_now[-1]
 fc_now = np.array(fc_now)
+
+
+#get uncertainties for forecast>?
