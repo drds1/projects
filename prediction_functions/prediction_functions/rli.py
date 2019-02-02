@@ -128,6 +128,7 @@ class RLI:
         self.match_sd_model_predictions = False
         self.extrapolate = 'decay'
         self.extrapolate_exponential_decayconstant = 1.0
+        self.forbid_negative_response = False
 
     def add_component(self,timeseries,name=None,kind='normal', dates = None):
         ymean,ysd = np.mean(timeseries), np.std(timeseries)
@@ -337,7 +338,8 @@ class RLI:
         self.lag_confidences = []
         self.ar_response = self.get_ar_response()
         for response in self.ar_response:
-            response[response < 0] = 0
+            if self.forbid_negative_response is True:
+                response[response < 0] = 0
             csum = np.cumsum(response)
             lag = []
             for confidence in self.confidence_limits:
@@ -632,10 +634,10 @@ class RLI:
         for i in range(iterations):
             self.optimize_regularisation(defaults = defaults)
             rw_now = np.max(self.regularize_weight)
-            idx = np.where(trials == rw_now)[0][0]
+            idx = np.where(defaults == rw_now)[0][0]
             idlo = max(0, idx-1)
-            idhi = min(len(trials)-1,idx+1)
-            trials = np.linspace(trials[idlo],trials[idhi],ntrials)
+            idhi = min(len(defaults)-1,idx+1)
+            trials = np.linspace(defaults[idlo],defaults[idhi],ntrials)
             if verbose is True:
                 print('optimizing regularisation...')
                 print('iteration: ',i+1,' of ',iterations,' regularisation =',np.round(rw_now,2))
@@ -794,20 +796,27 @@ if __name__ == '__main__':
 
     #weights can either be a single number or a numpy array with different
     #regularisation weights for each parameter
-    weights = 100.
-    a.regularize_weight = weights
+    #weights = 1.
+    #a.regularize_weight = weights
     a.iterated_optimize_regularisation()
+    #a.regularize_weight = weights
     a.fit()
     a.fit_statistics()
     a.predict(nsteps=npredict)
     a.plot_summary()
     plt.tight_layout()
     plt.savefig('/Users/david/Desktop/test_RLI_figs.pdf')
+    plt.close()
     a.presentation_plot()
     plt.tight_layout()
-    plt.show()
+    plt.savefig('/Users/david/Desktop/RLI_sum2.pdf')
 
+    plt.close()
     a.plot_summary()
-    plt.show()
+    plt.savefig('/Users/david/Desktop/RLI_sum.pdf')
+
+    plt.close()
+    a.plot_aic()
+    plt.savefig('/Users/david/Desktop/RLI_aic.pdf')
 
 

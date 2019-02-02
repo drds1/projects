@@ -523,10 +523,3 @@ p0=-1,bpl = [0.5,2,2],normalise = 1):
 ##ax1.set_yscale('log')
 ##
 #plt.show()
-
-
-
-
-
-
-   

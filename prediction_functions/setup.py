@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='prediction_functions',
-      version='1.2.0',
+      version='1.2.1',
       description='requirements for fish_forecasting code',
       url='https://github.com/dstarkey23/projects/tree/master/prediction_functions',
       author='dstarkey23',

@@ -1,6 +1,4 @@
 import numpy as np
-
-
 # combine signals with specific uncertainties and weights r
 # should all be on same time axis prior to inserting in here
 #
