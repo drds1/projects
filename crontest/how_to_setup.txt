@@ -1,0 +1,9 @@
+''type the following''
+
+crontab -e
+
+''then enter''
+*/10 * * * * /Users/david/projects/github_datascience/projects/crontest/print_time.py
+
+
+''into the editor. Should run every 10 minutes''
