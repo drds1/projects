@@ -103,6 +103,7 @@ from sklearn.ensemble import RandomForestRegressor
 rf = RandomForestRegressor(n_estimators= 1000, random_state=42)
 
 # Train the model on training data
+input()
 rf.fit(train_features, train_labels)
 
 
