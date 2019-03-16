@@ -1,7 +1,8 @@
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
-
-
+import sys
+sys.path.append("../fake_data")
+from fake_data import *
 
 class rfr:
 
@@ -214,7 +215,21 @@ if __name__ == '__main__':
     '''
     test rfr on some data
     '''
+    #generate fake data
+    a = fake_data()
+    a.covariates = 4
+    a.npoints = 200
+    a.initialise()
+    a.add_covariates(importances=[1., 0.1, 0.1, 0.1], iseed=343435)
+
+    #test random forrest regressor
     x = rfr()
+    #set required parameters
+    x.feature_list = ['component '+np.str(i+1) for i in range(a.covariates)]
+    x.covariates = a.extra_covariates
+    x.ymain = a.driver
+
+    #perform fit and make plots
     x.split_train_test()
     x.split_train_test()
     x.initialize()
