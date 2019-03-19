@@ -71,8 +71,15 @@ class rfr:
 
     def initialize_mlp(self):
         #multilayer perceptron regressor
-        self.rf = MLPRegressor()
-
+        rf = MLPRegressor(solver='lbfgs', alpha=1e-5,hidden_layer_sizes=(5), random_state=1)
+        MLPRegressor(activation='relu', alpha=1e-05, batch_size='auto',
+                     beta_1=0.9, beta_2=0.999, early_stopping=False,
+                     epsilon=1e-08, hidden_layer_sizes=(5, 2), learning_rate='constant',
+                     learning_rate_init=0.001, max_iter=200, momentum=0.9,
+                     nesterovs_momentum=True, power_t=0.5, random_state=1, shuffle=True,
+                     solver='lbfgs', tol=0.0001, validation_fraction=0.1, verbose=False,
+                     warm_start=False)
+        self.rf = rf
 
     def initialize_glm(self):
         #glm not (custom version)
@@ -329,6 +336,7 @@ class rfr:
         :param rf:
         :return:
         '''
+        self.backup_inputs()
         component_selection = self.component_selection_trainmodel(self.rf)
         idx_use = np.array([i for i in range(len(self.feature_list)) if
                    self.feature_list[i] in component_selection['name']],dtype=int)
@@ -345,6 +353,8 @@ class rfr:
         self.split_train_test()
         self.rf.fit(new_train,self.train_labels)
         self.cross_validation_check(new_test)
+
+        self.restore_inputs()
 
 
 
