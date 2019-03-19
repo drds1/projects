@@ -1,13 +1,18 @@
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
 import sys
-sys.path.append("../fake_data")
+sys.path.append("/Users/david/github_datascience/projects/fake_data")
 from fake_data import *
 from sklearn import ensemble
 from sklearn.isotonic import IsotonicRegression
 from sklearn.neural_network import MLPRegressor
-
-
+import time
+import numpy as np
+import matplotlib.pylab as plt
+from sklearn.tree import export_graphviz
+import pydot
+from sklearn import linear_model
+import prediction_functions.model_selection as ms
 
 class rfr:
 
@@ -36,6 +41,23 @@ class rfr:
         self.train_labels = train_labels
         self.test_labels = test_labels
 
+    def backup_inputs(self):
+        self.backup_train_features = np.array(self.train_features)
+        self.backup_test_features = np.array(self.test_features)
+        self.backup_train_labels = np.array(self.train_labels)
+        self.backup_test_labels = np.array(self.test_labels)
+        self.backup_feature_list = list(self.feature_list)
+        self.backup_ymain = np.array(self.ymain)
+
+    def restore_inputs(self):
+        self.train_features = np.array(self.backup_train_features)
+        self.test_features = np.array(self.backup_test_features)
+        self.train_labels = np.array(self.backup_train_labels)
+        self.test_labels = np.array(self.backup_test_labels)
+        self.feature_list = list(self.backup_feature_list)
+        self.ymain = np.array(self.backup_ymain)
+
+
 
     def initialize_rf(self):
         # Instantiate model
@@ -49,27 +71,96 @@ class rfr:
 
     def initialize_mlp(self):
         #multilayer perceptron regressor
-        self.rf = MLPRegressor
+        self.rf = MLPRegressor()
+
+
+    def initialize_glm(self):
+        #glm not (custom version)
+        self.rf = linear_model.LinearRegression()
+
+
+    def fit(self,x,y):
+        #fit with choice of regressor
+        self.rf.fit(y,x)
+
+
+    def component_selection_trainmodel(self,rf):
+        '''
+        use aic to select optimum number of components
+        order is selected using a greedy algorithm
+        :return:
+        :param rf:
+        :return:
+        '''
+        labels,covariates = self.ymain,self.covariates
+        npoints,ncovariates = np.shape(self.covariates)
+        chosen = np.zeros((npoints,0))
+        not_chosen = [self.covariates[:,i] for i in range(ncovariates)]
+        new_component = np.zeros((npoints,1))
+        covariate_now = np.zeros((npoints, 1))
+        aic_save = []
+        feature_list_notchosen = list(self.feature_list)
+        feature_list_chosen = []
+        for i in range(ncovariates):
+            aic = []
+            for i2 in range(len(not_chosen)):
+                covariate_now[:,0] = not_chosen[i2]
+                now = np.hstack((chosen, covariate_now))
+                rf.fit(now,labels)
+                aic.append(self.component_selection_predictmodel(rf,now))
+            idx_chosen = np.argmin(aic)
+            aic_save.append(aic[idx_chosen])
+            feature_list_chosen.append(feature_list_notchosen.pop(idx_chosen))
+            new_component[:,0] = not_chosen.pop(idx_chosen)
+            chosen = np.hstack((chosen,new_component))
+
+        '''
+        output the results of component selection as well as the matrix
+        of final chosen components
+        '''
+        idmin = np.argmin(aic_save)
+        component_used = np.arange(idmin+1)
+        summary = {'name':[feature_list_chosen[c] for c in component_used],
+                    'aic':[aic_save[c] for c in component_used],
+                   'component matrix':chosen[:,component_used]}
+
+        print(pd.DataFrame( {'name':feature_list_chosen,
+                    'aic':aic_save}))
+        return(summary)
 
 
 
 
 
 
-    def cross_validation_check(self):
+
+    def component_selection_predictmodel(self,rf,chosen_features):
+        '''
+        use aic to select optimum number of components
+        order is selected using a greedy algorithm
+        :return:
+        '''
+        predictions = rf.predict(chosen_features)
+        k = np.shape(chosen_features)[1]
+        aic = ms.aic(self.ymain,predictions,k)
+        return(aic)
+
+
+
+    def cross_validation_check(self,test_features):
         #use cross validation to assess the model accuracy
         t0 = time.time()
         predictions = self.rf.predict(test_features)
         t1 = time.time()
         # Make predictions and determine the error
-        errors = abs(predictions - test_labels)
+        errors = abs(predictions - self.test_labels)
         # Calculate mean absolute percentage error (MAPE)
-        mape = 100 * (errors / test_labels)
+        mape = 100 * (errors / abs(self.test_labels))
         # Display the performance metrics
         print('Mean Absolute Error:', round(np.mean(errors), 2), 'dollars')
         accuracy = 100 - np.mean(mape)
-        print('Accuracy random forrest:', np.round(accuracy, 2), '%.')
-        print ''
+        print('Accuracy regressor:', np.round(accuracy, 2), '%.')
+        print('Mean mape',np.round(np.mean(mape), 2), '%.')
         self.predictions = predictions
         self.errors = errors
         self.mape = mape
@@ -96,8 +187,10 @@ class rfr:
         lres = np.linspace(lmin,lmax,nres)
         eres = np.interp(pres,tl,er)
         ares = np.interp(pres,pr,tl)
-        fit_coef,sig_coef,xorth = cpc.polyfit(tl,pr,er,1)
-        sig_coef = sig_coef
+        xorth = np.mean(tl)
+        fit_coef,cov = np.polyfit(tl,pr,deg=1,w=1./er,cov=True)
+        print(np.shape(cov))
+        sig_coef = np.sqrt(np.diag(cov))
         xplot = lres
         yplot = fit_coef[1]*(xplot - xorth) + fit_coef[0]
         sigplot = np.sqrt((xplot-xorth)**2*sig_coef[1]**2 + sig_coef[0]**2)
@@ -229,17 +322,71 @@ class rfr:
 
 
 
+    def test_method(self):
+        '''
+        suggest a regressor method and perform greedy search to find
+        the best combination of components
+        :param rf:
+        :return:
+        '''
+        component_selection = self.component_selection_trainmodel(self.rf)
+        idx_use = np.array([i for i in range(len(self.feature_list)) if
+                   self.feature_list[i] in component_selection['name']],dtype=int)
+        print(component_selection['name'])
+        print(self.feature_list)
+        print(idx_use)
+        new_components = self.covariates[:,idx_use]
+        new_feature_list = [self.feature_list[i] for i in idx_use]
+        new_train = self.train_features[:,idx_use]
+        new_test = self.test_features[:,idx_use]
+        # set required parameters
+        self.feature_list = new_feature_list
+        self.covariates = new_components
+        self.split_train_test()
+        self.rf.fit(new_train,self.train_labels)
+        self.cross_validation_check(new_test)
+
+
+
+
+
+    def test_all_methods(self):
+        '''
+        test all the regressor methods above to check which minimizes mape
+        :return:
+        '''
+        self.initialize_rf()
+        self.test_method()
+        self.mape_rfr = self.mape
+        print('rfr\n')
+
+        self.initialize_gbr()
+        self.test_method()
+        self.mape_rfr = self.mape
+        print('GBR\n')
+
+        self.initialize_mlp()
+        self.test_method()
+        self.mape_rfr = self.mape
+        print('MLP\n')
+
+        self.initialize_glm()
+        self.test_method()
+        self.mape_rfr = self.mape
+        print('GLM\n')
 
 if __name__ == '__main__':
     '''
     test rfr on some data
     '''
+    regressors = ['rf','mpl','gbr']
+
     #generate fake data
     a = fake_data()
     a.covariates = 4
     a.npoints = 200
     a.initialise()
-    a.add_covariates(importances=[1., 0.1, 0.1, 0.1], iseed=343435)
+    a.add_covariates(importances=[1., 0.0, 0.0, 0.0], iseed=343435)
 
     #test random forrest regressor
     x = rfr()
@@ -250,10 +397,10 @@ if __name__ == '__main__':
 
     #perform fit and make plots
     x.split_train_test()
-    x.initialize_rf()
-    x.cross_validation_check()
-    x.plot_CV_results()
-    x.plot_single_tree()
-    x.get_importances()
-    x.two_features_only()
-    x.visualisations()
+
+    x.test_all_methods()
+    #x.plot_CV_results()
+    #x.plot_single_tree()
+    #x.get_importances()
+    #x.two_features_only()
+    #x.visualisations()
