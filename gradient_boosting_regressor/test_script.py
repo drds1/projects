@@ -8,7 +8,7 @@ from sklearn.neural_network import MLPRegressor
 
 
 
-# generate fake data
+# generate fake data https://stats.stackexchange.com/questions/377705/gradient-boosting-price-forecast-based-on-time-series-data
 a = fake_data()
 a.covariates = 4
 a.npoints = 200
