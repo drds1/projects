@@ -1,7 +1,7 @@
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
 import sys
-sys.path.append("/Users/david/github_datascience/projects/fake_data")
+sys.path.append("/Users/david/github_datascience/projects/fake_data/")
 from fake_data import *
 from sklearn import ensemble
 from sklearn.isotonic import IsotonicRegression
@@ -13,6 +13,9 @@ from sklearn.tree import export_graphviz
 import pydot
 from sklearn import linear_model
 import prediction_functions.model_selection as ms
+from sklearn.gaussian_process import GaussianProcessRegressor
+from sklearn.gaussian_process.kernels import DotProduct, WhiteKernel
+
 
 class rfr:
 
@@ -86,9 +89,15 @@ class rfr:
         self.rf = linear_model.LinearRegression()
 
 
+    def initialize_gpr(self):
+        kernel = DotProduct() + WhiteKernel()
+        self.rf = GaussianProcessRegressor(kernel = kernel,random_state=0)
+
+
     def fit(self,x,y):
         #fit with choice of regressor
         self.rf.fit(y,x)
+
 
 
     def component_selection_trainmodel(self,rf):
@@ -384,6 +393,11 @@ class rfr:
         self.test_method()
         self.mape_rfr = self.mape
         print('GLM\n')
+
+        self.initialize_gpr()
+        self.test_method()
+        self.mape_gpr = self.mape
+        print('GPR\n')
 
 if __name__ == '__main__':
     '''
