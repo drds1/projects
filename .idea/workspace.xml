@@ -21,8 +21,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/regressor_comparison/regressors.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="97">
-              <caret line="62" column="3" lean-forward="true" selection-start-line="62" selection-start-column="3" selection-end-line="62" selection-end-column="3" />
+            <state relative-caret-position="808">
+              <caret line="423" column="24" lean-forward="true" selection-start-line="423" selection-start-column="24" selection-end-line="423" selection-end-column="24" />
               <folding>
                 <element signature="e#0#52#0" expanded="true" />
               </folding>
@@ -86,9 +86,9 @@
   </component>
   <component name="ProjectFrameBounds">
     <option name="x" value="1194" />
-    <option name="y" value="23" />
+    <option name="y" value="24" />
     <option name="width" value="1280" />
-    <option name="height" value="1339" />
+    <option name="height" value="1337" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
@@ -96,7 +96,22 @@
     </navigator>
     <panes>
       <pane id="Scope" />
-      <pane id="ProjectPane" />
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="projects" type="b2602c69:ProjectViewProjectNode" />
+              <item name="projects" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="projects" type="b2602c69:ProjectViewProjectNode" />
+              <item name="projects" type="462c0819:PsiDirectoryNode" />
+              <item name="regressor_comparison" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -128,8 +143,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1194" y="23" width="1280" height="1339" extended-state="0" />
-    <editor active="true" />
+    <frame x="1194" y="24" width="1280" height="1337" extended-state="0" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.35107228" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -144,7 +158,7 @@
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="8" />
       <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="10" visible="true" weight="0.33119488" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="10" visible="true" weight="0.3309237" />
       <window_info anchor="bottom" id="Python Console" order="11" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -176,8 +190,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/regressor_comparison/regressors.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="97">
-          <caret line="62" column="3" lean-forward="true" selection-start-line="62" selection-start-column="3" selection-end-line="62" selection-end-column="3" />
+        <state relative-caret-position="808">
+          <caret line="423" column="24" lean-forward="true" selection-start-line="423" selection-start-column="24" selection-end-line="423" selection-end-column="24" />
           <folding>
             <element signature="e#0#52#0" expanded="true" />
           </folding>

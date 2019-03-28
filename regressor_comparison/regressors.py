@@ -1,5 +1,6 @@
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.ensemble import ExtraTreesRegressor
 import sys
 sys.path.append("/Users/david/github_datascience/projects/fake_data")
 from fake_data import *
@@ -61,7 +62,11 @@ class rfr:
 
     def initialize_rf(self):
         # Instantiate model
-        self.rf = RandomForestRegressor(n_estimators= 1000, random_state=42)
+        self.rf = RandomForestRegressor(n_estimators= 10, random_state=42)
+
+    def initialize_etr(self):
+        # Instantiate model
+        self.rf = ExtraTreesRegressor(n_estimators= 10, random_state=42)
 
     def initialize_gbr(self):
         #gradient boosting regressor
@@ -369,6 +374,11 @@ class rfr:
         self.test_method()
         self.mape_rfr = self.mape
         print('rfr\n')
+
+        self.initialize_etr()
+        self.test_method()
+        self.mape_rfr = self.mape
+        print('etr\n')
 
         self.initialize_gbr()
         self.test_method()
