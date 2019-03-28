@@ -367,7 +367,10 @@ class rfr:
         self.split_train_test()
         self.rf.fit(new_train,self.train_labels)
         self.cross_validation_check(new_test)
-
+        self.method_results['predictions'].append(list(self.predictions))
+        self.method_results['true'].append(self.ymain)
+        self.method_results['mape'].append(self.mape)
+        self.method_results['rms'].append(np.std(self.predictions - self.test_labels))
         self.restore_inputs()
 
 
@@ -379,34 +382,46 @@ class rfr:
         test all the regressor methods above to check which minimizes mape
         :return:
         '''
+        self.method_results = {'predictions':[],
+                          'true':[],
+                          'mape':[],
+                          'rms':[],
+                          'method':[]}
+
         self.initialize_rf()
         self.test_method()
         self.mape_rfr = self.mape
+        self.method_results['method'].append('rfr')
         print('rfr\n')
 
         self.initialize_etr()
         self.test_method()
         self.mape_rfr = self.mape
+        self.method_results['method'].append('etr')
         print('etr\n')
 
         self.initialize_gbr()
         self.test_method()
         self.mape_rfr = self.mape
+        self.method_results['method'].append('GBR')
         print('GBR\n')
 
         self.initialize_mlp()
         self.test_method()
         self.mape_rfr = self.mape
+        self.method_results['method'].append('MLP')
         print('MLP\n')
 
         self.initialize_glm()
         self.test_method()
         self.mape_rfr = self.mape
+        self.method_results['method'].append('GLM')
         print('GLM\n')
 
         self.initialize_gpr()
         self.test_method()
         self.mape_gpr = self.mape
+        self.method_results['method'].append('GPR')
         print('GPR\n')
 
 if __name__ == '__main__':
