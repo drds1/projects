@@ -29,8 +29,8 @@ f90inv = gs.inverse(dat)
 '''
 test glm
 '''
-n = 20000
-k = 1000
+n = 2000
+k = 100
 
 ptrue = [20.0,13.0]
 
@@ -48,6 +48,7 @@ for ik in range(len(ptrue)):
 
 f = LinearRegression()
 tf1 = time.time()
+print(np.shape(X),np.shape(y),'datashape')
 f.fit(X,y)
 tf2 = time.time()
 
@@ -60,4 +61,6 @@ print('predicting time',tp2-tp1)
 print('ratio',(tf2-tf1)/(tp2-tp1))
 print('cisq',np.sum((pred - y)**2))
 print('NOW F90')
+os.system('gfortran greedy_select_f90.f90 f90random.f90')
 os.system('./a.out')
+

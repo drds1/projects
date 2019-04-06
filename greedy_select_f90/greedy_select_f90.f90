@@ -116,6 +116,7 @@ subroutine glm_fit(y,X,N,k,parm)
     doubleprecision hes(k,k),c(k),cov(k,k)
     doubleprecision sum1,sum2
 
+    call cpu_time(starttime)
     do k1 = 1,k
         !evaluate the c vector
         sum1 = 0.d0
@@ -133,9 +134,14 @@ subroutine glm_fit(y,X,N,k,parm)
             hes(k2,k1) = sum2
         end do
     end do
+    call cpu_time(endtime)
+    write(*,*) 'make hess',endtime-starttime
 
     !evaluate the covariance matrix
+    call cpu_time(starttime)
     call inverse(hes,cov,k)
+    call cpu_time(endtime)
+    write(*,*) 'inverting hess',endtime-starttime
 
     !evaluate the parameters
     do k1 = 1,k
