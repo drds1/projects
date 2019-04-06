@@ -1,5 +1,6 @@
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.ensemble import ExtraTreesRegressor
 import sys
 sys.path.append("/Users/david/github_datascience/projects/fake_data/")
 from fake_data import *
@@ -64,7 +65,11 @@ class rfr:
 
     def initialize_rf(self):
         # Instantiate model
-        self.rf = RandomForestRegressor(n_estimators= 1000, random_state=42)
+        self.rf = RandomForestRegressor(n_estimators= 10, random_state=42)
+
+    def initialize_etr(self):
+        # Instantiate model
+        self.rf = ExtraTreesRegressor(n_estimators= 10, random_state=42)
 
     def initialize_gbr(self):
         #gradient boosting regressor
@@ -362,7 +367,10 @@ class rfr:
         self.split_train_test()
         self.rf.fit(new_train,self.train_labels)
         self.cross_validation_check(new_test)
-
+        self.method_results['predictions'].append(list(self.predictions))
+        self.method_results['true'].append(self.ymain)
+        self.method_results['mape'].append(self.mape)
+        self.method_results['rms'].append(np.std(self.predictions - self.test_labels))
         self.restore_inputs()
 
 
@@ -374,29 +382,46 @@ class rfr:
         test all the regressor methods above to check which minimizes mape
         :return:
         '''
+        self.method_results = {'predictions':[],
+                          'true':[],
+                          'mape':[],
+                          'rms':[],
+                          'method':[]}
+
         self.initialize_rf()
         self.test_method()
         self.mape_rfr = self.mape
+        self.method_results['method'].append('rfr')
         print('rfr\n')
+
+        self.initialize_etr()
+        self.test_method()
+        self.mape_rfr = self.mape
+        self.method_results['method'].append('etr')
+        print('etr\n')
 
         self.initialize_gbr()
         self.test_method()
         self.mape_rfr = self.mape
+        self.method_results['method'].append('GBR')
         print('GBR\n')
 
         self.initialize_mlp()
         self.test_method()
         self.mape_rfr = self.mape
+        self.method_results['method'].append('MLP')
         print('MLP\n')
 
         self.initialize_glm()
         self.test_method()
         self.mape_rfr = self.mape
+        self.method_results['method'].append('GLM')
         print('GLM\n')
 
         self.initialize_gpr()
         self.test_method()
         self.mape_gpr = self.mape
+        self.method_results['method'].append('GPR')
         print('GPR\n')
 
 if __name__ == '__main__':

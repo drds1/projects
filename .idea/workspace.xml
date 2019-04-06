@@ -2,11 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4bc3eb95-db61-45f7-b138-9356d667db31" name="Default Changelist" comment="">
+<<<<<<< HEAD
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/projects.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/projects.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ensemble_regressor_brain/spykesML" beforeDir="false" afterPath="$PROJECT_DIR$/ensemble_regressor_brain/spykesML" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ensemble_regressor_brain/spykesML/notebooks/standalone_ML_demos.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/ensemble_regressor_brain/spykesML/notebooks/standalone_ML_demos.ipynb" afterDir="false" />
+=======
+      <change beforePath="$PROJECT_DIR$/regressor_comparison/regressors.py" beforeDir="false" afterPath="$PROJECT_DIR$/regressor_comparison/regressors.py" afterDir="false" />
+>>>>>>> a47059dfc3c55a0dbd1b694f79f46ad1104ee9fb
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -19,8 +23,13 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/regressor_comparison/regressors.py">
           <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
             <state relative-caret-position="135">
               <caret line="9" column="18" selection-start-line="9" selection-start-column="18" selection-end-line="9" selection-end-column="18" />
+=======
+            <state relative-caret-position="530">
+              <caret line="372" column="86" selection-start-line="372" selection-start-column="86" selection-end-line="372" selection-end-column="86" />
+>>>>>>> a47059dfc3c55a0dbd1b694f79f46ad1104ee9fb
               <folding>
                 <element signature="e#0#52#0" expanded="true" />
               </folding>
@@ -43,8 +52,12 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/fake_data/fake_data.py">
           <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
             <state relative-caret-position="144">
               <caret line="13" column="30" selection-start-line="13" selection-start-column="30" selection-end-line="13" selection-end-column="30" />
+=======
+            <state>
+>>>>>>> a47059dfc3c55a0dbd1b694f79f46ad1104ee9fb
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -70,7 +83,6 @@
       <find>component_selection_tr</find>
       <find>test_method()</find>
       <find>test_method</find>
-      <find>initi</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -86,10 +98,10 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="5" />
+    <option name="x" value="1194" />
     <option name="y" value="23" />
     <option name="width" value="1280" />
-    <option name="height" value="814" />
+    <option name="height" value="1337" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -97,7 +109,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -105,10 +116,16 @@
               <item name="projects" type="b2602c69:ProjectViewProjectNode" />
               <item name="projects" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="projects" type="b2602c69:ProjectViewProjectNode" />
+              <item name="projects" type="462c0819:PsiDirectoryNode" />
+              <item name="regressor_comparison" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -141,10 +158,14 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="5" y="23" width="1280" height="814" extended-state="0" />
+    <frame x="1194" y="23" width="1280" height="1337" extended-state="0" />
     <editor active="true" />
     <layout>
+<<<<<<< HEAD
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.2673667" />
+=======
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.35107228" />
+>>>>>>> a47059dfc3c55a0dbd1b694f79f46ad1104ee9fb
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -157,18 +178,27 @@
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="8" />
       <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
+<<<<<<< HEAD
       <window_info active="true" anchor="bottom" id="Terminal" order="10" visible="true" weight="0.34903046" />
+=======
+      <window_info active="true" anchor="bottom" id="Terminal" order="10" visible="true" weight="0.3309237" />
+>>>>>>> a47059dfc3c55a0dbd1b694f79f46ad1104ee9fb
       <window_info anchor="bottom" id="Python Console" order="11" />
-      <window_info anchor="right" id="R Graphics" />
-      <window_info anchor="right" id="R Packages" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
     </layout>
   </component>
   <component name="editorHistoryManager">
+<<<<<<< HEAD
     <entry file="file://$PROJECT_DIR$/regressor_comparison/compare.py" />
     <entry file="file://$PROJECT_DIR$/fake_data/fake_data.py">
+=======
+    <entry file="file://$PROJECT_DIR$/regressor_comparison/compare.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/timeseries_prep/timeseries_prep.py">
+>>>>>>> a47059dfc3c55a0dbd1b694f79f46ad1104ee9fb
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="144">
           <caret line="13" column="30" selection-start-line="13" selection-start-column="30" selection-end-line="13" selection-end-column="30" />
@@ -180,8 +210,12 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/timeseries_prep/timeseries_prep.py">
       <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
         <state relative-caret-position="1365">
           <caret line="91" column="14" selection-start-line="91" selection-start-column="14" selection-end-line="91" selection-end-column="14" />
+=======
+        <state>
+>>>>>>> a47059dfc3c55a0dbd1b694f79f46ad1104ee9fb
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
@@ -190,8 +224,13 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/regressor_comparison/regressors.py">
       <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
         <state relative-caret-position="135">
           <caret line="9" column="18" selection-start-line="9" selection-start-column="18" selection-end-line="9" selection-end-column="18" />
+=======
+        <state relative-caret-position="530">
+          <caret line="372" column="86" selection-start-line="372" selection-start-column="86" selection-end-line="372" selection-end-column="86" />
+>>>>>>> a47059dfc3c55a0dbd1b694f79f46ad1104ee9fb
           <folding>
             <element signature="e#0#52#0" expanded="true" />
           </folding>
