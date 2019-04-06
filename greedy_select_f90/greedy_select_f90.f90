@@ -1,6 +1,6 @@
 subroutine getcisq(true,predict,N,cisq)
     integer,intent(in)::N
-    real,intent(in):: true(N),predict(N)
+    doubleprecision,intent(in):: true(N),predict(N)
     doubleprecision,intent(out):: cisq
     doubleprecision:: res
     !f2py intent(in):: true,predict
@@ -109,6 +109,64 @@ end subroutine inverse
 
 
 
+subroutine glm_fit(y,X,N,k,parm)
+    integer,intent(in)::N,k
+    doubleprecision,intent(in)::y(N),X(N,k)
+    doubleprecision,intent(out):: parm(k)
+    doubleprecision hes(k,k),c(k),cov(k,k)
+    doubleprecision sum1,sum2
+
+    do k1 = 1,k
+        !evaluate the c vector
+        sum1 = 0.d0
+        do i = 1,N
+            sum1 = sum1 + y(i)*X(i,k1)
+        end do
+        c(k1) = sum1
+
+        !evaluate the hessian matrix
+        do k2  = 1,k
+            sum2 = 0.d0
+            do i = 1,N
+                sum2 = sum2 + X(i,k2)*X(i,k1)
+            end do
+            hes(k2,k1) = sum2
+        end do
+    end do
+
+    !evaluate the covariance matrix
+    call inverse(hes,cov,k)
+
+    !evaluate the parameters
+    do k1 = 1,k
+        sum1 = 0.d0
+        do k2 = 1,k
+            sum1 = sum1 + cov(k2,k1)*c(k2)
+        end do
+        parm(k1) = sum1
+    end do
+
+end subroutine glm_fit
+
+
+
+
+
+subroutine glm_predict(X,parms,predicted,N,k)
+    integer,intent(in)::N,k
+    doubleprecision,intent(in):: X(N,k),parms(k)
+    doubleprecision,intent(out):: predicted(N)
+    doubleprecision:: sum
+
+    do i = 1,N
+        sum = 0.d0
+        do ik=1,k
+            sum = sum + parms(ik)*X(i,ik)
+        end do
+        predicted(i) = sum
+    end do
+
+end subroutine glm_predict
 
 
 
@@ -163,3 +221,58 @@ end subroutine inverse
 !    write(*,*) csq
 !
 !end program testcisq
+
+
+!gfortran greedy_select_f90.f90 f90random.f90
+program testglm
+    doubleprecision:: cisq
+    doubleprecision,allocatable:: X(:,:),Y(:),parms(:),predicted(:),ptrue(:)
+    integer N,k,iseed
+    N = 20000
+    k = 1000
+    ktrue = 2
+    iseed = 324342
+
+
+
+    allocate(X(N,k),Y(N),parms(k),predicted(N),ptrue(ktrue))
+    ptrue(1) = 20.0
+    ptrue(2) = 13.0
+
+!generate fake data input random noise
+    do i = 1,N
+        Y(i) = 3.2*sin(2*3.1415926535/P1 * i) + 8.0*sin(2*3.1415926535/P2 * i)
+        do kx=1,k
+            X(i,kx) = c4_normal_01 ( iseed )
+        end do
+    end do
+
+    !input true signals
+    do i = 1,N
+        Y(i) = 3.2*sin(2*3.1415926535/ptrue(1) *i) + 8.0*sin(2*3.1415926535/ptrue(2) * i)
+        do kx=1,ktrue
+            X(i,kx) = sin(2*3.1415926535/ptrue(kx) * i)
+        end do
+    end do
+
+!run and time fit
+    call cpu_time(starttime)
+    call glm_fit(y,X,N,k,parms)
+    call cpu_time(endtime)
+    ttime = endtime-starttime
+    write(*,*) 'training time',ttime
+    call cpu_time(starttime)
+    call glm_predict(X,parms,predicted,N,k)
+    call cpu_time(endtime)
+    ptime = endtime-starttime
+    write(*,*) 'predict time',ptime
+    write(*,*)'ratio train/predict',ttime/ptime
+    call getcisq(y,predicted,N,cisq)
+    write(*,*) 'true, predicted cisq',cisq
+
+
+
+
+
+
+end program testglm
