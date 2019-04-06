@@ -234,8 +234,8 @@ program testglm
     doubleprecision:: cisq
     doubleprecision,allocatable:: X(:,:),Y(:),parms(:),predicted(:),ptrue(:)
     integer N,k,iseed
-    N = 20000
-    k = 1000
+    N = 2000
+    k = 100
     ktrue = 2
     iseed = 324342
 

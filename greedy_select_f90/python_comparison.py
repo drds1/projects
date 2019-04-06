@@ -2,6 +2,8 @@ import numpy as np
 import time
 from sklearn.linear_model import LinearRegression
 import os
+import glmnet_python
+from glmnet import glmnet
 
 '''
 test inverse matrix
@@ -60,6 +62,17 @@ print('training time',tf2-tf1)
 print('predicting time',tp2-tp1)
 print('ratio',(tf2-tf1)/(tp2-tp1))
 print('cisq',np.sum((pred - y)**2))
+
+
+
+
+#now glmnet
+tg1 = time.time()
+fit = glmnet(x=X,y=y)
+tg2 = time.time()
+print('glm net',tg2 - tg1)
+
+
 print('NOW F90')
 os.system('gfortran greedy_select_f90.f90 f90random.f90')
 os.system('./a.out')

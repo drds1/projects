@@ -432,10 +432,10 @@ if __name__ == '__main__':
 
     #generate fake data
     a = fake_data()
-    a.covariates = 4
-    a.npoints = 200
+    a.covariates = 100
+    a.npoints = 2000
     a.initialise()
-    a.add_covariates(importances=[1., 0.0, 0.0, 0.0], iseed=343435)
+    a.add_covariates(importances=[1., 0.0, 0.3, 0.0], iseed=343435)
 
     #test random forrest regressor
     x = rfr()
