@@ -31,8 +31,8 @@ y = 23.*t + 0.3*t**2
 '''
 setup parameter grid
 '''
-f = np.arange(1./n,1/2/dt,1./n)
-f = np.random.choice(f,size=10,replace=False)
+f = np.arange(1./n,1/8/dt,1./n)
+#f = np.random.choice(f,size=10,replace=False)
 nf = len(f)
 w = 1./f
 nw = int(nf)
