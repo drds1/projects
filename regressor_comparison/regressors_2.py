@@ -309,6 +309,19 @@ if __name__ == '__main__':
                    global_title='large sample ratio')
     plt.savefig('useless_ratio_large_sample.pdf')
 
+
+    # ratio of useful/useless components
+    x = test_model_Nk_ratio()
+    x.n_informative = np.arange(2,1001,10)
+    x.K = [1000]*len(x.n_informative)
+    x.N = [10000] * len(x.K)
+    x.run()
+    x.plot_results(xlabel='fraction of useful components',
+                   xvalue='useful-total ratio',
+                   global_title='large sample ratio and more components')
+    plt.savefig('useless_ratio_large_sample_1000K.pdf')
+
+
     # ratio of useful/useless components
     x = test_model_Nk_ratio()
     x.n_informative = np.arange(2,101)
