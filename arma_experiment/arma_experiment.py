@@ -3,9 +3,9 @@ import numpy as np
 from sklearn import linear_model
 import pandas as pd
 
-def generate_arma(p=[0.75, -0.25],
-                  q=[0.65,0.35],
-                  n=1000):
+def generate_arma(p=[1.0,0.75, -0.25],
+                  q=[1.0,0.65,0.35],
+                  n=100):
     '''
     generate and return n samples of an ARMA(p,q) process
     :param p:
@@ -23,9 +23,9 @@ class fit_arma:
 
     def __init__(self):
         self.y = None
-        self.p = 2
-        self.q = 2
-        self.Niterations = 1000
+        self.p = 3
+        self.q = 3
+        self.Niterations = 10000
         self.model = linear_model.LinearRegression(fit_intercept=False)
         self.coefs = None
 
@@ -95,3 +95,9 @@ if __name__ == '__main__':
     f.fit()
     f.get_output()
     op = f.output
+    print(op.mean(axis=0))
+    print(op.std(axis=0)**2)
+    import corner
+    import matplotlib.pylab as plt
+    corner.corner(op)
+    plt.show()
