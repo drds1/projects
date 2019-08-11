@@ -71,7 +71,8 @@ class test_regressors:
                   'score':[],
                   'direction':[],
                   'train time':[],
-                  'predict time':[]}
+                  'predict time':[],
+                  'model':[]}
         for i in range(len(self.fits['model'])):
             mnow = self.fits['model'][i]
             name = self.fits['name'][i]
@@ -91,6 +92,7 @@ class test_regressors:
             output['score'].append(cisq_N)
             output['train time'].append(t2-t1)
             output['predict time'].append(t3-t2)
+            output['model'].append(mnow)
 
         df = pd.DataFrame(output)
 
@@ -103,7 +105,7 @@ class test_regressors:
         #    print('iteration',i)
 
             self.fit_1round()
-            x = self.output[['score','train time','predict time','direction']].values[:,:]
+            x = self.output[['score','train time','predict time','direction','model']].values[:,:]
             if i == 0:
                 scores =     x[:,0]
                 train_time = x[:,1]
@@ -153,6 +155,46 @@ class test_regressors:
 
 
 
+    def plot_train_test(self):
+        '''
+        side by side plots of the correlation between predicted and test
+        values and the time series of predictions
+        :return:
+        '''
+        true = self.ytest
+        Xtest = self.Xtest
+        x = np.arange(len(true))
+        mnow = self.average_output['model'].iloc[0]
+        predictions = mnow.predict(Xtest)
+        plt.close()
+        fig = plt.figure()
+        ax1 = fig.add_subplot(121)
+        ax1.plot(x,predictions,label='predicted')
+        ax1.plot(x,true,label='true')
+        ax1.set_xlabel('sample number')
+        ax1.set_ylabel('value')
+        ax1.set_title('predictions vs true\ntime series')
+        ax1.legend(fontsize='x-small')
+
+        ax1 = fig.add_subplot(122)
+        ax1.scatter(predictions,true,label=None)
+        ax1.set_xlabel('prediction')
+        ax1.set_ylabel('true value')
+        ax1.set_title('predicted-true correlations')
+        xlim = list(ax1.get_xlim())
+        ax1.plot(xlim,xlim,ls='--',color='k',label='equivalence')
+        ax1.set_xlim(xlim)
+        ax1.set_ylim(xlim)
+        ax1.legend(fontsize='x-small')
+        plt.tight_layout()
+
+
+
+
+
+
+
+
 
 class test_model_Nk_ratio:
 
@@ -190,6 +232,8 @@ class test_model_Nk_ratio:
             df['useful-useless ratio'] = df['useful components']/df['useless components']
             self.df_op = self.df_op.append(df)
             idx = idx + 1
+
+
 
 
     def plot_results(self,
@@ -253,12 +297,14 @@ if __name__ == '__main__':
                           'gpr']}
 
 
-
+    a.fits = {'model':[linear_model.LinearRegression()],'name':['glm']}
     a.N = 1000
     a.K = 800
     a.n_informative = 2
     a.make_fake()
     a.fit_multiround(nrounds = nave)
+    a.plot_train_test()
+    plt.savefig('train_test.pdf')
     #print('average outouts after',nave,'iterations')
     print(a.average_output)
 
