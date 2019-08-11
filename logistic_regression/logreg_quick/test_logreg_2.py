@@ -69,7 +69,7 @@ class log_reg_heartdisease:
 
 
 
-    def ROC_analysis(self,X,y,threshold = np.arange(0.1,1)):
+    def ROC_analysis(self,X,y,threshold = np.logspace(-2,0,30)):
         '''
         Perform the ROC analysis for the selected input threhold values
         :param X:
@@ -81,8 +81,8 @@ class log_reg_heartdisease:
         false_positive_fraction = []
         for t in threshold:
             cm = self.get_confusion_matrix(t,X,y)
-            tp = cm[0,0]/np.sum(cm[:,0])
-            fp = cm[0,1]/np.sum(cm[:,1])
+            tp = cm[1,1]/np.sum(cm[1,:])
+            fp = cm[0,1]/np.sum(cm[0,:])
             true_positive_fraction.append(tp)
             false_positive_fraction.append(fp)
 
@@ -95,7 +95,7 @@ class log_reg_heartdisease:
         #compute the integral
         x = df_op[['false positive fraction']].values
         y = df_op[['true positive fraction']].values
-        dx = x[1:] * x[:-1]
+        dx = x[1:] - x[:-1]
         self.AOC = np.sum(y[1:]*dx)
         self.ROC_output = df_op
 
@@ -108,14 +108,17 @@ class log_reg_heartdisease:
         plt.close()
         tp = self.ROC_output['true positive fraction']
         fp = self.ROC_output['false positive fraction']
-        idsort = np.argsort(fp)
-        fp = fp[idsort]
-        tp = tp[idsort]
+        #idsort = np.argsort(fp)
+        #fp = fp[idsort]
+        #tp = tp[idsort]
         fig = plt.figure()
         ax1 = fig.add_subplot(111)
         ax1.plot(fp,tp,marker='o',label='AOC = '+np.str(np.round(self.AOC,2)))
         ax1.set_xlabel('False Positive Fraction\n(1 - Specificity)')
         ax1.set_ylabel('True Positive Fraction\n(Sensistivity)')
+        ax1.set_xlim([0,1])
+        ax1.set_ylim([0,1])
+        ax1.plot([0,1],[0,1],ls='--',label=None)
         ax1.set_title(title)
         plt.tight_layout()
         plt.legend()
@@ -129,7 +132,7 @@ if __name__ == '__main__':
     x.fit(x.Xtrain,x.ytrain)
     df = x.df
     predictions = x.predict(x.Xtrain,threshold=0.5)
-    x.ROC_analysis(x.Xtest,x.ytest,threshold=np.arange(0.1,1.0,0.1))
+    x.ROC_analysis(x.Xtest,x.ytest,threshold=np.logspace(-2,0,30))
     dfroc = x.ROC_output
     x.plot_ROC_analysis()
     plt.savefig('ROC_analysis.pdf')
