@@ -1,7 +1,9 @@
 from sklearn.datasets import load_iris
 from sklearn.linear_model import LogisticRegressionCV
+from sklearn.metrics import confusion_matrix
 import pandas as pd
 import numpy as np
+import matplotlib.pylab as plt
 
 class log_reg_heartdisease:
     '''
@@ -41,7 +43,6 @@ class log_reg_heartdisease:
 
 
 
-
     def predict(self,X,threshold = 0.5,verbose = True):
         classification = np.zeros(len(X))
         probs = self.clf.predict_proba(X)
@@ -54,6 +55,72 @@ class log_reg_heartdisease:
         return(classification)
 
 
+    def get_confusion_matrix(self,threshold,Xtest,ytest):
+        '''
+        return the confusion matrix for the threshold and test data
+        :param threshold:
+        :param Xtest:
+        :param ytest:
+        :return:
+        '''
+        predictions = self.predict(Xtest,threshold=threshold)
+        cm = confusion_matrix(ytest,predictions)
+        return(cm)
+
+
+
+    def ROC_analysis(self,X,y,threshold = np.arange(0.1,1)):
+        '''
+        Perform the ROC analysis for the selected input threhold values
+        :param X:
+        :param y:
+        :param threshold:
+        :return:
+        '''
+        true_positive_fraction = []
+        false_positive_fraction = []
+        for t in threshold:
+            cm = self.get_confusion_matrix(t,X,y)
+            tp = cm[0,0]/np.sum(cm[:,0])
+            fp = cm[0,1]/np.sum(cm[:,1])
+            true_positive_fraction.append(tp)
+            false_positive_fraction.append(fp)
+
+        #save the ROC info
+        df_op = pd.DataFrame({'threshold':threshold,
+                               'true positive fraction':true_positive_fraction,
+                               'false positive fraction':false_positive_fraction})
+        df_op.sort_values(by='false positive fraction',inplace=True)
+
+        #compute the integral
+        x = df_op[['false positive fraction']].values
+        y = df_op[['true positive fraction']].values
+        dx = x[1:] * x[:-1]
+        self.AOC = np.sum(y[1:]*dx)
+        self.ROC_output = df_op
+
+
+    def plot_ROC_analysis(self,title = 'ROC Logistic Regression'):
+        '''
+        Plot the Results of the ROC analysis
+        :return:
+        '''
+        plt.close()
+        tp = self.ROC_output['true positive fraction']
+        fp = self.ROC_output['false positive fraction']
+        idsort = np.argsort(fp)
+        fp = fp[idsort]
+        tp = tp[idsort]
+        fig = plt.figure()
+        ax1 = fig.add_subplot(111)
+        ax1.plot(fp,tp,marker='o',label='AOC = '+np.str(np.round(self.AOC,2)))
+        ax1.set_xlabel('False Positive Fraction\n(1 - Specificity)')
+        ax1.set_ylabel('True Positive Fraction\n(Sensistivity)')
+        ax1.set_title(title)
+        plt.tight_layout()
+        plt.legend()
+
+
 
 
 if __name__ == '__main__':
@@ -62,6 +129,11 @@ if __name__ == '__main__':
     x.fit(x.Xtrain,x.ytrain)
     df = x.df
     predictions = x.predict(x.Xtrain,threshold=0.5)
+    x.ROC_analysis(x.Xtest,x.ytest,threshold=np.arange(0.1,1.0,0.1))
+    dfroc = x.ROC_output
+    x.plot_ROC_analysis()
+    plt.savefig('ROC_analysis.pdf')
+
 
 
 
