@@ -4,6 +4,7 @@ from sklearn.metrics import confusion_matrix
 import pandas as pd
 import numpy as np
 import matplotlib.pylab as plt
+from sklearn.ensemble import RandomForestClassifier
 
 class log_reg_heartdisease:
     '''
@@ -15,6 +16,8 @@ class log_reg_heartdisease:
     def __init__(self):
         self.file = './framingham.csv'
         self.frac_train = 0.75
+        self.model = LogisticRegressionCV(random_state=0, solver='lbfgs',
+                                 multi_class='multinomial')
 
 
 
@@ -38,8 +41,7 @@ class log_reg_heartdisease:
 
 
     def fit(self,X,y):
-        self.clf = LogisticRegressionCV(random_state=0, solver='lbfgs',
-                                 multi_class='multinomial').fit(X, y)
+        self.clf = self.model.fit(X, y)
 
 
 
@@ -126,6 +128,62 @@ class log_reg_heartdisease:
 
 
 
+
+
+class compare_classifiers:
+
+    def __init__(self):
+        self.models = pd.DataFrame(
+            {'name':['LR','RFC'],
+                       'model':[LogisticRegressionCV(random_state=0, solver='lbfgs',
+                                 multi_class='multinomial'),
+                                RandomForestClassifier(n_estimators=100, max_depth=2,random_state = 0)]})
+
+
+    def fit(self):
+        x = log_reg_heartdisease()
+        x.load_data()
+        n = len(self.models)
+        self.dfroc = pd.DataFrame({})
+        for i in range(n):
+            modelname = self.models['name'].iloc[i]
+            model = self.models['model'].iloc[i]
+            x.model = model
+            x.fit(x.Xtrain,x.ytrain)
+            x.ROC_analysis(x.Xtest, x.ytest, threshold=np.logspace(-2, 0, 30))
+            dfrocnew = x.ROC_output
+            dfrocnew['model'] = [modelname]*len(dfrocnew)
+            self.dfroc = self.dfroc.append(dfrocnew)
+
+    def plot_ROC(self,title = 'ROC Logistic Regression'):
+        '''
+        plot the ROC analysis for each model on the same graph
+        :return:
+        '''
+        plt.close()
+        fig = plt.figure()
+        ax1 = fig.add_subplot(111)
+        models = list(self.dfroc['model'].unique())
+
+        for m in models:
+            print('plotting ROC...',m)
+            dfnow = self.dfroc[self.dfroc['model'] == m]
+            dfnow.sort_values(by='false positive fraction',inplace=True)
+            x = dfnow['false positive fraction'].values
+            y = dfnow['true positive fraction'].values
+            dx = x[1:] - x[:-1]
+            AOC = np.sum(y[1:]*dx)
+            ax1.plot(x,y,marker='o',label=m+' AOC:'+np.str(np.round(AOC,2)))
+        ax1.set_xlabel('False Positive Fraction\n(1 - Specificity)')
+        ax1.set_ylabel('True Positive Fraction\n(Sensistivity)')
+        ax1.set_xlim([0,1])
+        ax1.set_ylim([0,1])
+        ax1.plot([0,1],[0,1],ls='--',label=None)
+        ax1.set_title(title)
+        plt.legend()
+        plt.tight_layout()
+
+
 if __name__ == '__main__':
     x = log_reg_heartdisease()
     x.load_data()
@@ -136,6 +194,12 @@ if __name__ == '__main__':
     dfroc = x.ROC_output
     x.plot_ROC_analysis()
     plt.savefig('ROC_analysis.pdf')
+
+
+    z = compare_classifiers()
+    z.fit()
+    z.plot_ROC()
+    plt.savefig('ROC_RFLR_comp.pdf')
 
 
 
