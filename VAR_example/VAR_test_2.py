@@ -35,7 +35,7 @@ lag_order = results.k_ar
 #produce combined 5 step forecast 
 fc_comb = results.forecast(data.values[-lag_order:], 5)
 results.plot_forecast(5)
-plt.show()
+plt.savefig('VAR_2_results.png')
 
 #produce iterated 5 step forecast --> Verified these are the same 
 #therefore code incorporates this step :)
@@ -49,5 +49,10 @@ for i in range(nsteps):
 	last_vals[-1,:] = fc_now[-1]
 fc_now = np.array(fc_now)
 
+
+#plot the response function
+irf = results.irf(1000)
+irf.plot(orth=False)
+plt.savefig('VAR_2_responses.png')
 
 #get uncertainties for forecast>?
