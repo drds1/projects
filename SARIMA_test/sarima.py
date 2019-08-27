@@ -7,6 +7,7 @@ from warnings import filterwarnings
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 from sklearn.metrics import mean_squared_error
 from pandas import read_csv
+import pandas as pd
 
 # one-step sarima forecast
 def sarima_forecast(history, config):
@@ -157,10 +158,24 @@ class sarima_CV:
                                   Q_params=self.Q_params
                                   )
         # grid search
-        self.scores = grid_search(data, cfg_list, self.n_test)
+        s = grid_search(data, cfg_list, self.n_test)
+        score_df = {'p': [], 'd': [], 'q': [], 'P': [], 'D': [], 'Q': [], 'S': [], 'trend': []}
+        for i in range(len(s)):
+            pdq_PDQS = [int(ss) for ss in s[i][0] if ss.isdigit()]
+            trend_now = s[i][0].split("'")[1]
+            score_df['p'].append(pdq_PDQS[0])
+            score_df['d'].append(pdq_PDQS[1])
+            score_df['q'].append(pdq_PDQS[2])
+            score_df['P'].append(pdq_PDQS[3])
+            score_df['D'].append(pdq_PDQS[4])
+            score_df['Q'].append(pdq_PDQS[5])
+            score_df['S'].append(pdq_PDQS[6])
+            score_df['trend'].append(trend_now)
+        self.scores = pd.DataFrame(score_df)
+
         print('done')
         # list top 3 configs
-        for cfg, error in self.scores[:3]:
+        for cfg, error in s[:3]:
             print(cfg, error)
 
 
