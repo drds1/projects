@@ -165,3 +165,4 @@ if __name__ == '__main__':
     X = varma_CV()
     X.data = data
     X.run_CV()
+
