@@ -8,7 +8,6 @@ from statsmodels.tsa.statespace.sarimax import SARIMAX
 from sklearn.metrics import mean_squared_error
 from pandas import read_csv
 
-
 # one-step sarima forecast
 def sarima_forecast(history, config):
     order, sorder, trend = config
@@ -158,7 +157,7 @@ class sarima_CV:
                                   Q_params=self.Q_params
                                   )
         # grid search
-        self.scores = grid_search(data, cfg_list, n_test)
+        self.scores = grid_search(data, cfg_list, self.n_test)
         print('done')
         # list top 3 configs
         for cfg, error in self.scores[:3]:
