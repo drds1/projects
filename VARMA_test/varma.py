@@ -4,16 +4,17 @@ from joblib import Parallel
 from joblib import delayed
 from warnings import catch_warnings
 from warnings import filterwarnings
-from statsmodels.tsa.statespace.sarimax import SARIMAX
+from statsmodels.tsa.statespace.varmax import VARMAX
 from sklearn.metrics import mean_squared_error
 from pandas import read_csv
 import pandas as pd
+import numpy as np
 
 # one-step sarima forecast
-def sarima_forecast(history, config):
-    order, sorder, trend = config
+def varma_forecast(history, config):
+    order, trend = config
     # define model
-    model = SARIMAX(history, order=order, seasonal_order=sorder, trend=trend, enforce_stationarity=False,
+    model = VARMAX(history, order=order, trend=trend, enforce_stationarity=False,
                     enforce_invertibility=False)
     # fit model
     model_fit = model.fit(disp=False)
@@ -42,7 +43,7 @@ def walk_forward_validation(data, n_test, cfg):
     # step over each time-step in the test set
     for i in range(len(test)):
         # fit model and make forecast for history
-        yhat = sarima_forecast(history, cfg)
+        yhat = varma_forecast(history, cfg)
         # store forecast in list of predictions
         predictions.append(yhat)
         # add actual observation to history for the next loop
@@ -93,33 +94,21 @@ def grid_search(data, cfg_list, n_test, parallel=True):
 
 
 # create a set of sarima configs to try
-def sarima_configs(seasonal=[0],
-                   p_params = [0, 1, 2],
-                   d_params = [0, 1],
+def varma_configs(p_params = [0, 1, 2],
                    q_params = [0, 1, 2],
-                   t_params = ['n', 'c', 't', 'ct'],
-                   P_params = [0, 1, 2],
-                   D_params = [0, 1],
-                   Q_params = [0, 1, 2]):
+                   t_params = ['n', 'c', 't', 'ct']):
     models = list()
-    # define config lists
-    m_params = seasonal
     # create config instances
     for p in p_params:
-        for d in d_params:
-            for q in q_params:
-                for t in t_params:
-                    for P in P_params:
-                        for D in D_params:
-                            for Q in Q_params:
-                                for m in m_params:
-                                    cfg = [(p, d, q), (P, D, Q, m), t]
-                                    models.append(cfg)
+        for q in q_params:
+            for t in t_params:
+                cfg = [(p, q), t]
+                models.append(cfg)
     return models
 
 
 
-class sarima_CV:
+class varma_CV:
     '''
     perform a cross validated test of the sarima modelling
     '''
@@ -127,14 +116,10 @@ class sarima_CV:
     def __init__(self):
         self.data = 'monthly-car-sales.csv'
         self.n_test = 12
-        self.seasonal=[0]
         self.p_params = [0, 1, 2]
-        self.d_params = [0, 1]
         self.q_params = [0, 1, 2]
         self.t_params = ['n', 'c', 't', 'ct']
-        self.P_params = [0, 1, 2]
-        self.D_params = [0, 1]
-        self.Q_params = [0, 1,2]
+
 
     def run_CV(self):
         '''
@@ -148,31 +133,20 @@ class sarima_CV:
         else:
             data = self.data.values
 
-        cfg_list = sarima_configs(seasonal=self.seasonal,
-                                  p_params=self.p_params,
-                                  d_params=self.d_params,
+
+        cfg_list = varma_configs(p_params=self.p_params,
                                   q_params=self.q_params,
-                                  t_params=self.t_params,
-                                  P_params=self.P_params,
-                                  D_params=self.D_params,
-                                  Q_params=self.Q_params
-                                  )
+                                  t_params=self.t_params)
         # grid search
         s = grid_search(data, cfg_list, self.n_test)
-        score_df = {'p': [], 'd': [], 'q': [], 'P': [], 'D': [], 'Q': [], 'S': [], 'trend': []}
+        score_df = {'p': [], 'q': [], 'trend': []}
         for i in range(len(s)):
             pdq_PDQS = [int(ss) for ss in s[i][0] if ss.isdigit()]
             trend_now = s[i][0].split("'")[1]
             score_df['p'].append(pdq_PDQS[0])
-            score_df['d'].append(pdq_PDQS[1])
-            score_df['q'].append(pdq_PDQS[2])
-            score_df['P'].append(pdq_PDQS[3])
-            score_df['D'].append(pdq_PDQS[4])
-            score_df['Q'].append(pdq_PDQS[5])
-            score_df['S'].append(pdq_PDQS[6])
+            score_df['q'].append(pdq_PDQS[1])
             score_df['trend'].append(trend_now)
         self.scores = pd.DataFrame(score_df)
-
         print('done')
         # list top 3 configs
         for cfg, error in s[:3]:
@@ -182,12 +156,13 @@ class sarima_CV:
 
 
 
-
-
-
-
 if __name__ == '__main__':
     # load dataset
-
-    X = sarima_CV()
+    data = pd.read_csv('monthly-car-sales.csv')
+    data['test 1'] = np.random.randn(len(data))
+    data['test 2'] = np.random.randn(len(data))
+    data.set_index('Month',inplace=True)
+    X = varma_CV()
+    X.data = data
     X.run_CV()
+
