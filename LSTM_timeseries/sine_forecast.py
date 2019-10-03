@@ -5,26 +5,31 @@ from keras.layers.recurrent import LSTM
 from keras.models import Sequential
 import time
 from sklearn.metrics import mean_squared_error
-from matplotlib import pyplot
+import matplotlib.pylab as plt
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import StandardScaler
 
 #generate fake data
-time = np.arange(5001)
-period = 250
-amp = 11.5
-series = amp*np.sin(2*np.pi/period * time)
+N = 10001
+period = 100
+amp = 1.0
+intercept = 0.0
+series = amp*np.sin(2*np.pi/period * np.arange(N)) + intercept
 series = pd.DataFrame(series)
 
+series = pd.read_csv('shampoo-sales.csv').iloc[:,[1]]
+
+#LSTM parameters
+window_size = 4
 
 
 #diagnose inpiut data
 print(series.shape)
-pyplot.figure(figsize=(20,6))
-pyplot.plot(series.values)
-pyplot.show()
-pyplot.figure(figsize=(20,6))
-pyplot.plot(series.v)
+fig = plt.figure(figsize=(20,6))
+ax1 = fig.add_subplot(111)
+ax1.plot(series.values)
+plt.savefig('input_ts.pdf')
+plt.close()
 
 
 # normalize features -
@@ -32,7 +37,6 @@ scaler = MinMaxScaler(feature_range=(-1, 1))
 scaled = scaler.fit_transform(series.values)
 series = pd.DataFrame(scaled)
 
-window_size = 50
 
 #convert into features and labels
 series_s = series.copy()
@@ -73,7 +77,7 @@ print(test_y.shape)
 
 # Define the LSTM model
 model = Sequential()
-model.add(LSTM(input_shape = (50,1), output_dim= 50, return_sequences = True))
+model.add(LSTM(input_shape = (window_size,1), output_dim= window_size, return_sequences = True))
 model.add(Dropout(0.5))
 model.add(LSTM(256))
 model.add(Dropout(0.5))
@@ -91,12 +95,14 @@ print("> Compilation Time : ", time.time() - start)
 preds = model.predict(test_X)
 # Doing a prediction on all the test data at once
 preds = model.predict(test_X)
-actuals = scaler.inverse_transform(test_y)
+actuals = scaler.inverse_transform(test_y.reshape(-1,1))
 #actuals = test_y
 mean_squared_error(actuals,preds)
-pyplot.plot(actuals)
-pyplot.plot(preds)
-pyplot.show()
+
+plt.plot(actuals)
+plt.plot(preds)
+plt.savefig('actual_vs_pred.pdf')
+plt.close()
 
 
 def moving_test_window_preds(n_future_preds):
@@ -116,17 +122,18 @@ def moving_test_window_preds(n_future_preds):
                                                 1)  # Reshaping the prediction to 3D array for concatenation with moving test window
         moving_test_window = np.concatenate((moving_test_window[:, 1:, :], preds_one_step),
                                             axis=1)  # This is the new moving test window, where the first element from the window has been removed and the prediction  has been appended to the end
-
-    preds_moving = scaler.inverse_transform(preds_moving)
-
+    preds_moving = np.array(preds_moving).reshape(1,-1)
+    preds_moving = scaler.inverse_transform(preds_moving)[0,:]
     return preds_moving
 
 
 
 
 preds_moving = moving_test_window_preds(500)
-pyplot.plot(actuals)
-pyplot.plot(preds_moving)
-pyplot.show()
+plt.plot(actuals)
+plt.plot(preds_moving)
+plt.savefig('rolling_predictions.pdf')
+plt.close()
+
 
 
