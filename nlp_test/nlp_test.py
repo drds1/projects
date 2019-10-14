@@ -99,6 +99,9 @@ class sentence_classifier:
 
 if __name__ == '__main__':
 
+
+
+
     #load input sentence data
     df = load_sentiment_data(path = './input/sentiment labelled sentences',
                             file_dict={'yelp': 'yelp_labelled.txt',
@@ -122,5 +125,18 @@ if __name__ == '__main__':
     nlp.fit()
     predictions_prob = nlp.predict(sentences[:])
     predictions_lab = nlp.predict_class(sentences[:])
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
